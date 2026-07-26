@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>STRIDE - Official Store</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            // তোমার Public Key এখানে যুক্ত করা হয়েছে
+            emailjs.init("7hstmbvM9NgYnX4Ll");
+        })();
+    </script>
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', 'Segoe UI', sans-serif; }
         body { background-color: #f8f9fa; color: #212529; }
@@ -25,16 +35,16 @@
         .dropdown-menu a { display: block; padding: 12px 20px; color: #334155; text-decoration: none; font-weight: 500; font-size: 14px; border-bottom: 1px solid #f1f5f9; transition: 0.2s; }
         .dropdown-menu a:hover { background: #38bdf8; color: #fff; padding-left: 24px; }
 
-        /* Cover Banner */
+        /* Banner */
         .banner-container { width: 90%; max-width: 1200px; margin: 25px auto; position: relative; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .banner-img { width: 100%; height: 350px; object-fit: cover; display: block; }
         .banner-upload-btn { position: absolute; bottom: 15px; right: 15px; background: rgba(15, 23, 42, 0.85); color: #fff; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; display: none; align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,0.2); }
         .banner-upload-btn input { display: none; }
 
-        /* Main Layout */
+        /* Layout */
         .main-container { width: 90%; max-width: 1200px; margin: 30px auto; display: flex; gap: 30px; }
 
-        /* Secret Admin Panel */
+        /* Admin Panel */
         .admin-panel { width: 360px; background: #fff; padding: 22px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); height: fit-content; display: none; flex-shrink: 0; }
         .admin-panel h3 { margin-bottom: 15px; color: #0f172a; border-bottom: 2px solid #38bdf8; padding-bottom: 8px; font-size: 16px; text-transform: uppercase; }
         .form-group { margin-bottom: 14px; }
@@ -42,7 +52,6 @@
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; outline: none; }
         .form-group textarea { resize: vertical; height: 65px; }
 
-        /* Cover Picker Preview inside Admin */
         .upload-preview-box { display: flex; gap: 8px; overflow-x: auto; margin-top: 8px; padding-bottom: 5px; }
         .preview-thumb-container { position: relative; flex-shrink: 0; width: 60px; height: 60px; cursor: pointer; border-radius: 6px; overflow: hidden; border: 2px solid #cbd5e1; }
         .preview-thumb-container.is-cover { border-color: #10b981; }
@@ -50,9 +59,8 @@
         .cover-badge { position: absolute; bottom: 0; left: 0; right: 0; background: #10b981; color: #fff; font-size: 8px; font-weight: bold; text-align: center; text-transform: uppercase; padding: 1px 0; }
 
         .upload-btn { width: 100%; background: #10b981; color: #fff; border: none; padding: 12px; font-size: 14px; font-weight: 700; border-radius: 6px; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
-        .upload-btn:hover { background: #059669; }
 
-        /* Product Grid Section */
+        /* Product Grid */
         .content-section { flex: 1; }
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
         .product-card { background: #fff; border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0; cursor: pointer; transition: 0.3s; position: relative; }
@@ -62,10 +70,9 @@
         .product-card-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .product-card-price { font-size: 17px; font-weight: 800; color: #ef4444; }
 
-        /* Admin Delete Button on Cards */
-        .delete-btn { display: none; position: absolute; top: 10px; right: 10px; background: #ef4444; color: #fff; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 14px; z-index: 10; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+        .delete-btn { display: none; position: absolute; top: 10px; right: 10px; background: #ef4444; color: #fff; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 14px; z-index: 10; }
 
-        /* Modal View */
+        /* Modals */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
         .modal-content { background: #fff; width: 90%; max-width: 760px; border-radius: 12px; padding: 25px; position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 25px; max-height: 90vh; overflow-y: auto; }
         .close-modal { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #64748b; }
@@ -83,12 +90,22 @@
         .option-group select, .option-group input { padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; width: 100%; font-size: 13px; }
         .buy-now-btn { background: #2563eb; color: #fff; border: none; padding: 12px; width: 100%; font-size: 14px; font-weight: 700; border-radius: 6px; cursor: pointer; margin-top: 15px; text-transform: uppercase; }
 
+        /* Checkout Modal */
+        .checkout-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 3000; justify-content: center; align-items: center; }
+        .checkout-box { background: #fff; width: 90%; max-width: 460px; border-radius: 12px; padding: 25px; position: relative; max-height: 90vh; overflow-y: auto; }
+        .checkout-box h3 { margin-bottom: 15px; color: #0f172a; font-size: 18px; border-bottom: 2px solid #38bdf8; padding-bottom: 8px; text-transform: uppercase; }
+        .checkout-close { position: absolute; top: 15px; right: 20px; font-size: 22px; cursor: pointer; color: #64748b; }
+        .checkout-btn { width: 100%; background: #10b981; color: #fff; border: none; padding: 12px; font-size: 15px; font-weight: 700; border-radius: 6px; cursor: pointer; margin-top: 15px; text-transform: uppercase; }
+
+        .payment-info-box { background: #e0f2fe; border: 1px solid #7dd3fc; border-radius: 6px; padding: 10px 12px; margin-top: 8px; font-size: 13px; color: #0369a1; display: none; }
+
         @media (max-width: 768px) {
             .main-container { flex-direction: column; }
             .modal-content { grid-template-columns: 1fr; }
             header { flex-direction: column; gap: 12px; }
             .search-box { width: 100%; }
             .admin-panel { width: 100%; }
+            .banner-img { height: 200px; }
         }
     </style>
 </head>
@@ -124,7 +141,7 @@
     <div class="banner-container">
         <img id="bannerImage" class="banner-img" src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=1200&q=80" alt="Banner">
         <label class="banner-upload-btn" id="bannerBtn">
-            <i class="fa-solid fa-camera"></i> Change Banner
+            <i class="fa-solid fa-camera"></i> Change Banner (1200x350)
             <input type="file" accept="image/*" onchange="changeBanner(event)">
         </label>
     </div>
@@ -132,12 +149,12 @@
     <!-- Main Content -->
     <div class="main-container">
 
-        <!-- Secret Admin Panel -->
+        <!-- Admin Panel -->
         <div class="admin-panel" id="adminPanel">
             <h3><i class="fa-solid fa-plus-circle"></i> Upload Product</h3>
             <form id="productForm" onsubmit="uploadProduct(event)">
                 <div class="form-group">
-                    <label>Product Headline *</label>
+                    <label>Product Title *</label>
                     <input type="text" id="pTitle" required placeholder="e.g. Wireless Headphone">
                 </div>
                 <div class="form-group">
@@ -161,22 +178,21 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Product Photos & Videos (Multiple) *</label>
+                    <label>Photos & Videos *</label>
                     <input type="file" id="pMedia" accept="image/*,video/*" multiple required onchange="handleMediaSelect(event)">
-                    <div style="font-size: 11px; color: #64748b; margin-top: 4px;">Click any photo below to set as COVER photo:</div>
                     <div class="upload-preview-box" id="uploadPreviewBox"></div>
                 </div>
                 <div class="form-group">
-                    <label>Colors (Optional - Comma separated)</label>
-                    <input type="text" id="pColors" placeholder="e.g. Black, Red, Blue">
+                    <label>Colors (Optional)</label>
+                    <input type="text" id="pColors" placeholder="e.g. Black, Red">
                 </div>
                 <div class="form-group">
-                    <label>Sizes (Optional - Comma separated)</label>
-                    <input type="text" id="pSizes" placeholder="e.g. M, L, XL or 40, 41">
+                    <label>Sizes (Optional)</label>
+                    <input type="text" id="pSizes" placeholder="e.g. M, L, XL">
                 </div>
                 <div class="form-group">
                     <label>Description *</label>
-                    <textarea id="pDesc" required placeholder="Enter product details..."></textarea>
+                    <textarea id="pDesc" required placeholder="Enter details..."></textarea>
                 </div>
                 <button type="submit" class="upload-btn">Save Product</button>
             </form>
@@ -185,9 +201,7 @@
         <!-- Product Grid -->
         <div class="content-section">
             <h2 style="margin-bottom: 20px; font-size: 20px; color: #0f172a;">All Products</h2>
-            <div class="product-grid" id="productGrid">
-                <!-- Products dynamically rendered -->
-            </div>
+            <div class="product-grid" id="productGrid"></div>
         </div>
 
     </div>
@@ -222,16 +236,63 @@
                     <input type="number" id="mQty" value="1" min="1">
                 </div>
 
-                <button class="buy-now-btn" onclick="alert('Order submitted successfully!')">Buy Now</button>
+                <button class="buy-now-btn" onclick="openCheckout()">Buy Now</button>
             </div>
         </div>
     </div>
 
+    <!-- Checkout Modal -->
+    <div class="checkout-modal" id="checkoutModal">
+        <div class="checkout-box">
+            <span class="checkout-close" onclick="closeCheckout()">&times;</span>
+            <h3><i class="fa-solid fa-bag-shopping"></i> Checkout Order</h3>
+            <form onsubmit="submitOrder(event)">
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" id="cName" required placeholder="Enter your full name">
+                </div>
+                <div class="form-group">
+                    <label>Mobile Number *</label>
+                    <input type="tel" id="cPhone" required placeholder="e.g. 01880595381">
+                </div>
+                <div class="form-group">
+                    <label>Complete Address *</label>
+                    <textarea id="cAddress" required placeholder="House/Road, Area, Upazila, District"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Payment Method *</label>
+                    <select id="cPayment" required onchange="togglePaymentInfo(this.value)">
+                        <option value="Cash on Delivery">Cash on Delivery</option>
+                        <option value="bKash / Nagad">bKash / Nagad (Send Money)</option>
+                    </select>
+
+                    <div class="payment-info-box" id="paymentInfoBox">
+                        <p id="pInfoText"></p>
+                    </div>
+                </div>
+
+                <div class="form-group" id="trxGroup" style="display: none;">
+                    <label>Transaction ID (TrxID) *</label>
+                    <input type="text" id="cTrx" placeholder="e.g. 9J87X1234">
+                </div>
+
+                <div class="form-group">
+                    <label>Note / Special Instruction (Optional)</label>
+                    <textarea id="cNote" placeholder="Any specific note..."></textarea>
+                </div>
+                <button type="submit" class="checkout-btn" id="confirmBtn">Confirm Order</button>
+            </form>
+        </div>
+    </div>
+
     <script>
+        const myNumber = "01880595381";
+
         let products = JSON.parse(localStorage.getItem('stride_products')) || [];
         let isAdmin = false;
         let selectedMediaList = [];
         let coverIndex = 0;
+        let currentActiveProductId = null;
 
         window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -266,8 +327,6 @@
             const files = e.target.files;
             selectedMediaList = [];
             coverIndex = 0;
-            const previewBox = document.getElementById('uploadPreviewBox');
-            previewBox.innerHTML = '';
 
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
@@ -277,7 +336,6 @@
                     url: dataUrl
                 });
             }
-
             renderUploadPreviews();
         }
 
@@ -298,7 +356,6 @@
                     : `<img src="${item.url}" class="preview-thumb">`;
 
                 let badge = idx === coverIndex ? `<div class="cover-badge">COVER</div>` : '';
-
                 container.innerHTML = element + badge;
                 previewBox.appendChild(container);
             });
@@ -315,7 +372,6 @@
             const desc = document.getElementById('pDesc').value;
 
             if (selectedMediaList.length > 0) {
-                // Rearrange so coverIndex becomes the FIRST item in array
                 let finalMedia = [...selectedMediaList];
                 if (coverIndex > 0) {
                     const coverItem = finalMedia.splice(coverIndex, 1)[0];
@@ -341,7 +397,7 @@
                 document.getElementById('uploadPreviewBox').innerHTML = '';
                 selectedMediaList = [];
                 coverIndex = 0;
-                alert('Product Saved with Chosen Cover Photo!');
+                alert('Product Saved Successfully!');
             }
         }
 
@@ -377,7 +433,6 @@
                 card.onclick = () => openModal(p.id);
 
                 let deleteBtnHtml = isAdmin ? `<button class="delete-btn" style="display:block;" onclick="deleteProduct(event, ${p.id})"><i class="fa-solid fa-trash"></i></button>` : '';
-
                 let coverMedia = p.media && p.media.length > 0 ? p.media[0] : { type: 'image', url: '' };
                 let mediaElement = coverMedia.type === 'video' 
                     ? `<video src="${coverMedia.url}" muted></video>` 
@@ -396,6 +451,7 @@
         }
 
         function openModal(id) {
+            currentActiveProductId = id;
             const p = products.find(item => item.id === id);
             if (!p) return;
 
@@ -403,29 +459,24 @@
             document.getElementById('mPrice').innerText = '৳ ' + p.price;
             document.getElementById('mDesc').innerText = p.desc;
 
-            // Render Media Gallery
             const gallery = document.getElementById('mediaGallery');
             gallery.innerHTML = '';
 
             if (p.media && p.media.length > 0) {
                 setMainMedia(p.media[0]);
-
                 p.media.forEach((item, index) => {
                     let thumb = document.createElement('img');
                     thumb.src = item.url;
                     thumb.className = `thumb-item ${index === 0 ? 'active' : ''}`;
-
                     thumb.onclick = function() {
                         document.querySelectorAll('.thumb-item').forEach(el => el.classList.remove('active'));
                         this.classList.add('active');
                         setMainMedia(item);
                     };
-
                     gallery.appendChild(thumb);
                 });
             }
 
-            // Colors
             const colorGroup = document.getElementById('colorGroup');
             const colorSelect = document.getElementById('mColorSelect');
             if (p.colors && p.colors.length > 0 && p.colors[0] !== "") {
@@ -435,7 +486,6 @@
                 colorGroup.style.display = 'none';
             }
 
-            // Sizes
             const sizeGroup = document.getElementById('sizeGroup');
             const sizeSelect = document.getElementById('mSizeSelect');
             if (p.sizes && p.sizes.length > 0 && p.sizes[0] !== "") {
@@ -459,6 +509,81 @@
 
         function closeModal() {
             document.getElementById('productModal').style.display = 'none';
+        }
+
+        function openCheckout() {
+            document.getElementById('checkoutModal').style.display = 'flex';
+        }
+
+        function closeCheckout() {
+            document.getElementById('checkoutModal').style.display = 'none';
+        }
+
+        function togglePaymentInfo(method) {
+            const infoBox = document.getElementById('paymentInfoBox');
+            const infoText = document.getElementById('pInfoText');
+            const trxGroup = document.getElementById('trxGroup');
+            const trxInput = document.getElementById('cTrx');
+
+            if (method === 'bKash / Nagad') {
+                infoBox.style.display = 'block';
+                infoText.innerHTML = `<strong>bKash / Nagad Number:</strong> ${myNumber} (Personal)<br><small>টাকা সেন্ড মানি করার পর নিচে TrxID বসিয়ে দিন।</small>`;
+                trxGroup.style.display = 'block';
+                trxInput.required = true;
+            } else {
+                infoBox.style.display = 'none';
+                trxGroup.style.display = 'none';
+                trxInput.required = false;
+            }
+        }
+
+        function submitOrder(e) {
+            e.preventDefault();
+            const p = products.find(item => item.id === currentActiveProductId);
+            if (!p) return;
+
+            const name = document.getElementById('cName').value;
+            const phone = document.getElementById('cPhone').value;
+            const address = document.getElementById('cAddress').value;
+            const payment = document.getElementById('cPayment').value;
+            const trx = document.getElementById('cTrx').value || 'N/A';
+            const note = document.getElementById('cNote').value || 'None';
+            const qty = document.getElementById('mQty').value;
+            const color = document.getElementById('colorGroup').style.display !== 'none' ? document.getElementById('mColorSelect').value : 'N/A';
+            const size = document.getElementById('sizeGroup').style.display !== 'none' ? document.getElementById('mSizeSelect').value : 'N/A';
+
+            let totalPrice = p.price * qty;
+            const confirmBtn = document.getElementById('confirmBtn');
+            confirmBtn.innerText = "Placing Order...";
+            confirmBtn.disabled = true;
+
+            // EmailJS Parameters
+            const templateParams = {
+                product_title: p.title,
+                product_price: `৳${p.price} x ${qty} = ৳${totalPrice}`,
+                product_color: color,
+                product_size: size,
+                customer_name: name,
+                customer_phone: phone,
+                customer_address: address,
+                payment_method: payment,
+                trx_id: trx,
+                customer_note: note
+            };
+
+            // EmailJS send function (তোমার Service ID ও Template ID যুক্ত করা হয়েছে)
+            emailjs.send('service_lssqioh', 'template_6qggs1k', templateParams)
+                .then(function(response) {
+                    alert('Order Placed Successfully! We have received your order.');
+                    confirmBtn.innerText = "Confirm Order";
+                    confirmBtn.disabled = false;
+                    closeCheckout();
+                    closeModal();
+                }, function(error) {
+                    alert('Order failed to send email. Please try again.');
+                    confirmBtn.innerText = "Confirm Order";
+                    confirmBtn.disabled = false;
+                });
         }
 
         function searchProducts() {
