@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STRIDE - Official Store</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f4f6f9; color: #333; }
+
+        /* Navbar Styling */
+        header { background: #1a1a2e; color: #fff; padding: 15px 5%; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .brand-name { font-size: 28px; font-weight: 800; letter-spacing: 2px; color: #00d2d3; text-decoration: none; }
+        
+        .search-box { display: flex; flex: 0.5; background: #fff; border-radius: 25px; overflow: hidden; padding: 2px; }
+        .search-box input { border: none; padding: 10px 15px; outline: none; width: 100%; font-size: 15px; }
+        .search-box button { border: none; background: #00d2d3; color: #fff; padding: 10px 20px; cursor: pointer; font-size: 16px; }
+
+        /* Category Dropdown */
+        .category-dropdown { position: relative; }
+        .category-btn { background: #0984e3; color: #fff; border: none; padding: 10px 20px; font-size: 15px; font-weight: 600; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .dropdown-menu { display: none; position: absolute; right: 0; top: 110%; background: #fff; width: 220px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); overflow: hidden; }
+        .category-dropdown:hover .dropdown-menu { display: block; }
+        .dropdown-menu a { display: block; padding: 12px 20px; color: #333; text-decoration: none; font-weight: 500; border-bottom: 1px solid #f0f0f0; transition: 0.2s; }
+        .dropdown-menu a:hover { background: #00d2d3; color: #fff; padding-left: 25px; }
+
+        /* Cover Banner Section */
+        .banner-container { width: 90%; max-width: 1200px; margin: 20px auto; position: relative; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .banner-img { width: 100%; height: 320px; object-fit: cover; display: block; }
+        .banner-upload-btn { position: absolute; bottom: 15px; right: 15px; background: rgba(0,0,0,0.7); color: #fff; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 6px; border: 1px solid #fff; }
+        .banner-upload-btn input { display: none; }
+
+        /* Main Layout (Admin Panel Left, Product Grid Right) */
+        .main-container { width: 90%; max-width: 1200px; margin: 30px auto; display: grid; grid-template-columns: 320px 1fr; gap: 30px; }
+
+        /* Admin Upload Form */
+        .admin-panel { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); height: fit-content; }
+        .admin-panel h3 { margin-bottom: 15px; color: #1a1a2e; border-bottom: 2px solid #00d2d3; padding-bottom: 8px; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px; color: #555; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; outline: none; }
+        .form-group textarea { resize: vertical; height: 60px; }
+        .upload-btn { width: 100%; background: #2ed573; color: #fff; border: none; padding: 12px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; margin-top: 10px; transition: 0.2s; }
+        .upload-btn:hover { background: #26af5f; }
+
+        /* Product Grid */
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        .product-card { background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 3px 10px rgba(0,0,0,0.08); cursor: pointer; transition: 0.3s; position: relative; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
+        .product-card img { width: 100%; height: 200px; object-fit: cover; }
+        .product-card-body { padding: 15px; }
+        .product-card-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; color: #222; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .product-card-price { font-size: 18px; font-weight: 800; color: #ff4757; }
+
+        /* Product Details Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: #fff; width: 90%; max-width: 700px; border-radius: 12px; padding: 25px; position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-height: 90vh; overflow-y: auto; }
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #777; }
+        .modal-img { width: 100%; height: 280px; object-fit: cover; border-radius: 8px; }
+        .modal-info h2 { font-size: 22px; margin-bottom: 10px; }
+        .modal-price { font-size: 22px; color: #ff4757; font-weight: bold; margin-bottom: 15px; }
+        .modal-desc { font-size: 14px; color: #666; margin-bottom: 15px; line-height: 1.4; }
+        .option-group { margin-bottom: 12px; }
+        .option-group label { font-size: 13px; font-weight: 600; display: block; margin-bottom: 5px; }
+        .option-group select, .option-group input { padding: 8px; border: 1px solid #ccc; border-radius: 5px; width: 100%; }
+        .buy-now-btn { background: #ff4757; color: #fff; border: none; padding: 12px; width: 100%; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; margin-top: 15px; }
+
+        @media (max-width: 768px) {
+            .main-container { grid-template-columns: 1fr; }
+            .modal-content { grid-template-columns: 1fr; }
+            header { flex-direction: column; gap: 10px; }
+            .search-box { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. Header Navigation -->
+    <header>
+        <a href="#" class="brand-name">STRIDE</a>
+        
+        <!-- 2. Search Option -->
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="আপনার পছন্দের প্রোডাক্ট খুঁজুন..." onkeyup="searchProducts()">
+            <button><i class="fa-solid fa-magnifying-glass"></i></button>
+        </div>
+
+        <!-- 3. Category Dropdown -->
+        <div class="category-dropdown">
+            <button class="category-btn"><i class="fa-solid fa-list"></i> ক্যাটাগরি</button>
+            <div class="dropdown-menu">
+                <a href="#" onclick="filterCategory('Gadgets')">1. Gadgets</a>
+                <a href="#" onclick="filterCategory('Fashions')">2. Fashions</a>
+                <a href="#" onclick="filterCategory('Footwear')">3. Footwear</a>
+                <a href="#" onclick="filterCategory('Watches')">4. Watches</a>
+                <a href="#" onclick="filterCategory('Audio')">5. Audio</a>
+                <a href="#" onclick="filterCategory('Accessories')">6. Accessories</a>
+                <a href="#" onclick="filterCategory('Home and Living')">7. Home & Living</a>
+                <a href="#" onclick="filterCategory('Beauty')">8. Beauty</a>
+                <a href="#" onclick="filterCategory('Fitness')">9. Fitness</a>
+                <a href="#" onclick="filterCategory('Offer / Deals')">10. Offer / Deals</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 4. Cover Photo Banner -->
+    <div class="banner-container">
+        <img id="bannerImage" class="banner-img" src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=1200&q=80" alt="Banner">
+        <label class="banner-upload-btn">
+            <i class="fa-solid fa-camera"></i> ব্যানার পরিবর্তন
+            <input type="file" accept="image/*" onchange="changeBanner(event)">
+        </label>
+    </div>
+
+    <!-- Main Section -->
+    <div class="main-container">
+
+        <!-- 5 & 6. Admin Upload Form -->
+        <div class="admin-panel">
+            <h3><i class="fa-solid fa-plus-circle"></i> প্রোডাক্ট আপলোড প্যানেল</h3>
+            <form id="productForm" onsubmit="uploadProduct(event)">
+                <div class="form-group">
+                    <label>প্রোডাক্টের নাম (HeadLine) *</label>
+                    <input type="text" id="pTitle" required placeholder="যেমন: Wireless Headphone">
+                </div>
+                <div class="form-group">
+                    <label>দাম (BDT) *</label>
+                    <input type="number" id="pPrice" required placeholder="যেমন: 1200">
+                </div>
+                <div class="form-group">
+                    <label>ক্যাটাগরি *</label>
+                    <select id="pCategory" required>
+                        <option value="">সিলেক্ট করুন</option>
+                        <option value="Gadgets">Gadgets</option>
+                        <option value="Fashions">Fashions</option>
+                        <option value="Footwear">Footwear</option>
+                        <option value="Watches">Watches</option>
+                        <option value="Audio">Audio</option>
+                        <option value="Accessories">Accessories</option>
+                        <option value="Home and Living">Home and Living</option>
+                        <option value="Beauty">Beauty</option>
+                        <option value="Fitness">Fitness</option>
+                        <option value="Offer / Deals">Offer / Deals</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>প্রোডাক্ট ছবি *</label>
+                    <input type="file" id="pImage" accept="image/*" required>
+                </div>
+                <div class="form-group">
+                    <label>কালার অপশন (ঐচ্ছিক - কমা দিয়ে লিখুন)</label>
+                    <input type="text" id="pColors" placeholder="যেমন: Black, Red, Blue">
+                </div>
+                <div class="form-group">
+                    <label>সাইজ অপশন (ঐচ্ছিক - কমা দিয়ে লিখুন)</label>
+                    <input type="text" id="pSizes" placeholder="যেমন: M, L, XL বা 40, 41, 42">
+                </div>
+                <div class="form-group">
+                    <label>ডেসক্রিপশন *</label>
+                    <textarea id="pDesc" required placeholder="প্রোডাক্টের বিস্তারিত বিবরন..."></textarea>
+                </div>
+                <button type="submit" class="upload-btn">আপলোড / সেভ করুন</button>
+            </form>
+        </div>
+
+        <!-- 7. Public Product List Grid -->
+        <div>
+            <h2 style="margin-bottom: 15px; font-size: 20px;">সকল প্রোডাক্টসমূহ</h2>
+            <div class="product-grid" id="productGrid">
+                <!-- Dynamic Products Will Appear Here -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 8. Product Details Modal -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <img id="mImg" class="modal-img" src="" alt="Product">
+            <div class="modal-info">
+                <h2 id="mTitle"></h2>
+                <div class="modal-price" id="mPrice"></div>
+                <p class="modal-desc" id="mDesc"></p>
+
+                <div class="option-group" id="colorGroup">
+                    <label>কালার সিলেক্ট করুন:</label>
+                    <select id="mColorSelect"></select>
+                </div>
+
+                <div class="option-group" id="sizeGroup">
+                    <label>সাইজ সিলেক্ট করুন:</label>
+                    <select id="mSizeSelect"></select>
+                </div>
+
+                <div class="option-group">
+                    <label>সংখ্যা (Quantity):</label>
+                    <input type="number" id="mQty" value="1" min="1">
+                </div>
+
+                <button class="buy-now-btn" onclick="alert('অর্ডার সাবমিট হয়েছে!')">এখনই কিনুন</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let products = [];
+
+        // Change Cover Banner
+        function changeBanner(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    document.getElementById('bannerImage').src = event.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Upload Product Logic
+        function uploadProduct(e) {
+            e.preventDefault();
+
+            const title = document.getElementById('pTitle').value;
+            const price = document.getElementById('pPrice').value;
+            const category = document.getElementById('pCategory').value;
+            const colors = document.getElementById('pColors').value;
+            const sizes = document.getElementById('pSizes').value;
+            const desc = document.getElementById('pDesc').value;
+            const imageFile = document.getElementById('pImage').files[0];
+
+            if (imageFile) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const newProduct = {
+                        id: Date.now(),
+                        title: title,
+                        price: price,
+                        category: category,
+                        colors: colors ? colors.split(',').map(s => s.trim()) : [],
+                        sizes: sizes ? sizes.split(',').map(s => s.trim()) : [],
+                        desc: desc,
+                        image: event.target.result
+                    };
+
+                    products.push(newProduct);
+                    renderProducts(products);
+
+                    // Auto Form Reset
+                    document.getElementById('productForm').reset();
+                    alert('প্রোডাক্ট সফলভাবে আপলোড হয়েছে!');
+                };
+                reader.readAsDataURL(imageFile);
+            }
+        }
+
+        // Render Products to Grid (Public View)
+        function renderProducts(items) {
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = '';
+
+            if (items.length === 0) {
+                grid.innerHTML = '<p style="color:#777;">কোন প্রোডাক্ট পাওয়া যায়নি।</p>';
+                return;
+            }
+
+            items.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.onclick = () => openModal(p.id);
+                card.innerHTML = `
+                    <img src="${p.image}" alt="${p.title}">
+                    <div class="product-card-body">
+                        <div class="product-card-title">${p.title}</div>
+                        <div class="product-card-price">৳ ${p.price}</div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Open Modal Details View
+        function openModal(id) {
+            const p = products.find(item => item.id === id);
+            if (!p) return;
+
+            document.getElementById('mImg').src = p.image;
+            document.getElementById('mTitle').innerText = p.title;
+            document.getElementById('mPrice').innerText = '৳ ' + p.price;
+            document.getElementById('mDesc').innerText = p.desc;
+
+            // Optional Color Handling
+            const colorGroup = document.getElementById('colorGroup');
+            const colorSelect = document.getElementById('mColorSelect');
+            if (p.colors.length > 0 && p.colors[0] !== "") {
+                colorGroup.style.display = 'block';
+                colorSelect.innerHTML = p.colors.map(c => `<option value="${c}">${c}</option>`).join('');
+            } else {
+                colorGroup.style.display = 'none';
+            }
+
+            // Optional Size Handling
+            const sizeGroup = document.getElementById('sizeGroup');
+            const sizeSelect = document.getElementById('mSizeSelect');
+            if (p.sizes.length > 0 && p.sizes[0] !== "") {
+                sizeGroup.style.display = 'block';
+                sizeSelect.innerHTML = p.sizes.map(s => `<option value="${s}">${s}</option>`).join('');
+            } else {
+                sizeGroup.style.display = 'none';
+            }
+
+            document.getElementById('productModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('productModal').style.display = 'none';
+        }
+
+        // Search Filter
+        function searchProducts() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = products.filter(p => p.title.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query));
+            renderProducts(filtered);
+        }
+
+        // Category Filter
+        function filterCategory(catName) {
+            const filtered = products.filter(p => p.category === catName);
+            renderProducts(filtered);
+        }
+    </script>
+</body>
+</html>
