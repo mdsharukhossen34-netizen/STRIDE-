@@ -10,7 +10,7 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
         (function() {
-            // তোমার Public Key এখানে যুক্ত করা হয়েছে
+            // তোমার সঠিক Public Key
             emailjs.init("7hstmbvM9NgYnX4LI");
         })();
     </script>
@@ -571,10 +571,10 @@
                 customer_note: note
             };
 
-            // EmailJS send function (তোমার Service ID ও Template ID যুক্ত করা হয়েছে)
-            emailjs.send('service_lssqioh', 'template_6qggs1k', templateParams)
+            // EmailJS Send - আপডেট করা Service ID ও Template ID সহ
+            emailjs.send('service_y27kukq', 'template_6qggs1k', templateParams)
                 .then(function(response) {
-                    alert('Order Placed Successfully! We have received your order.');
+                    alert('🎉 Order Placed Successfully! We have received your order.');
                     confirmBtn.innerText = "Confirm Order";
                     confirmBtn.disabled = false;
                     closeCheckout();
