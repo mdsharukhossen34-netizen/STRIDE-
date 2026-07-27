@@ -30,11 +30,9 @@
             measurementId: "G-0P7T26MWQ7"
         };
 
-        // Initialize Firebase & Realtime Database
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Global variables for database functions
         window.db = db;
         window.dbRef = ref;
         window.dbPush = push;
@@ -55,7 +53,6 @@
         .search-box input { border: none; padding: 10px 20px; outline: none; width: 100%; font-size: 14px; color: #333; }
         .search-box button { border: none; background: #38bdf8; color: #fff; padding: 10px 22px; cursor: pointer; font-size: 15px; }
 
-        /* Category Dropdown */
         .category-dropdown { position: relative; }
         .category-btn { background: #2563eb; color: #fff; border: none; padding: 10px 20px; font-size: 14px; font-weight: 600; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px; text-transform: uppercase; }
         .dropdown-menu { display: none; position: absolute; right: 0; top: 110%; background: #fff; width: 220px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); overflow: hidden; z-index: 100; }
@@ -68,6 +65,33 @@
         .banner-img { width: 100%; height: 350px; object-fit: cover; display: block; }
         .banner-upload-btn { position: absolute; bottom: 15px; right: 15px; background: rgba(15, 23, 42, 0.85); color: #fff; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; display: none; align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,0.2); }
         .banner-upload-btn input { display: none; }
+
+        /* Admin Dashboard Section */
+        .dashboard-section { width: 90%; max-width: 1200px; margin: 20px auto; background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); display: none; }
+        .dashboard-section h2 { font-size: 18px; color: #0f172a; margin-bottom: 15px; text-transform: uppercase; border-bottom: 2px solid #38bdf8; padding-bottom: 8px; }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .stat-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 15px; }
+        .stat-card .title { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; }
+        .stat-card .value { font-size: 18px; font-weight: 800; color: #0f172a; margin-top: 4px; }
+        .stat-card.highlight { background: #eff6ff; border-color: #bfdbfe; }
+        .stat-card.highlight .value { color: #2563eb; }
+
+        /* Orders Table */
+        .orders-table-wrapper { overflow-x: auto; }
+        table.orders-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        table.orders-table th, table.orders-table td { padding: 10px 12px; border: 1px solid #e2e8f0; text-align: left; }
+        table.orders-table th { background: #f1f5f9; color: #334155; font-weight: 700; text-transform: uppercase; }
+        .badge { padding: 3px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+        .badge-pending { background: #fef3c7; color: #d97706; }
+        .badge-completed { background: #d1fae5; color: #059669; }
+        .badge-cancelled { background: #fee2e2; color: #dc2626; }
+        
+        .action-btns { display: flex; gap: 4px; }
+        .btn-act { border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: 700; color: #fff; }
+        .btn-complete { background: #10b981; }
+        .btn-cancel { background: #ef4444; }
+        .btn-del { background: #64748b; }
 
         /* Layout */
         .main-container { width: 90%; max-width: 1200px; margin: 30px auto; display: flex; gap: 30px; }
@@ -99,7 +123,6 @@
         .product-card-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .product-card-price { font-size: 17px; font-weight: 800; color: #ef4444; }
 
-        /* Admin Actions on Card */
         .admin-card-actions { display: none; position: absolute; top: 10px; right: 10px; gap: 6px; z-index: 10; }
         .edit-btn { background: #2563eb; color: #fff; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; }
         .delete-btn { background: #ef4444; color: #fff; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; }
@@ -122,7 +145,6 @@
         .option-group select, .option-group input { padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; width: 100%; font-size: 13px; }
         .buy-now-btn { background: #2563eb; color: #fff; border: none; padding: 12px; width: 100%; font-size: 14px; font-weight: 700; border-radius: 6px; cursor: pointer; margin-top: 15px; text-transform: uppercase; }
 
-        /* Checkout Modal */
         .checkout-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 3000; justify-content: center; align-items: center; }
         .checkout-box { background: #fff; width: 90%; max-width: 480px; border-radius: 12px; padding: 25px; position: relative; max-height: 90vh; overflow-y: auto; }
         .checkout-box h3 { margin-bottom: 15px; color: #0f172a; font-size: 18px; border-bottom: 2px solid #38bdf8; padding-bottom: 8px; text-transform: uppercase; }
@@ -180,6 +202,66 @@
             <i class="fa-solid fa-camera"></i> Change Banner (1200x350)
             <input type="file" accept="image/*" onchange="changeBanner(event)">
         </label>
+    </div>
+
+    <!-- Admin Sales & Orders Dashboard -->
+    <div class="dashboard-section" id="adminDashboard">
+        <h2><i class="fa-solid fa-chart-line"></i> Sales & Orders Dashboard</h2>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="title">Total Orders</div>
+                <div class="value" id="stTotalOrders">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="title">Pending Orders</div>
+                <div class="value" id="stPendingOrders">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="title">Completed Orders</div>
+                <div class="value" id="stCompletedOrders" style="color: #059669;">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="title">Cancelled Orders</div>
+                <div class="value" id="stCancelledOrders" style="color: #dc2626;">0</div>
+            </div>
+            <div class="stat-card highlight">
+                <div class="title">Today's Sales</div>
+                <div class="value" id="stTodaySales">৳ 0</div>
+            </div>
+            <div class="stat-card highlight">
+                <div class="title">Monthly Sales</div>
+                <div class="value" id="stMonthlySales">৳ 0</div>
+            </div>
+            <div class="stat-card highlight">
+                <div class="title">Yearly Sales</div>
+                <div class="value" id="stYearlySales">৳ 0</div>
+            </div>
+            <div class="stat-card highlight">
+                <div class="title">Total Sales (Lifetime)</div>
+                <div class="value" id="stTotalSales">৳ 0</div>
+            </div>
+        </div>
+
+        <h3 style="font-size: 14px; margin-bottom: 10px; color: #334155;">Customer Orders List</h3>
+        <div class="orders-table-wrapper">
+            <table class="orders-table">
+                <thead>
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>Product Info</th>
+                        <th>Customer Details</th>
+                        <th>Total Amount</th>
+                        <th>Payment Method</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersTableBody">
+                    <tr><td colspan="7" style="text-align: center; color: #94a3b8;">Loading orders...</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <!-- Main Content -->
@@ -299,7 +381,6 @@
                     <textarea id="cAddress" required placeholder="House/Road, Area, Upazila, District"></textarea>
                 </div>
 
-                <!-- Delivery Charge Dropdown -->
                 <div class="form-group">
                     <label>Delivery Area *</label>
                     <select id="cDeliveryArea" required onchange="updateCheckoutCalculation()">
@@ -308,7 +389,6 @@
                     </select>
                 </div>
 
-                <!-- Price Summary Box -->
                 <div class="price-summary-box">
                     <div class="price-row">
                         <span>Product Subtotal:</span>
@@ -356,6 +436,7 @@
         const templateID = "template_6qggs1k";
 
         let products = [];
+        let orders = [];
         let isAdmin = false;
         let selectedMediaList = [];
         let coverIndex = 0;
@@ -366,6 +447,7 @@
             if (urlParams.get('admin') === 'true') {
                 isAdmin = true;
                 document.getElementById('adminPanel').style.display = 'block';
+                document.getElementById('adminDashboard').style.display = 'block';
                 document.getElementById('bannerBtn').style.display = 'flex';
             }
 
@@ -374,7 +456,6 @@
                 document.getElementById('bannerImage').src = savedBanner;
             }
 
-            // Realtime Database Listener
             initDatabaseListener();
         };
 
@@ -383,6 +464,7 @@
                 if (window.db && window.dbRef) {
                     clearInterval(checkFirebase);
                     
+                    // Products Listener
                     const productsRef = window.dbRef(window.db, 'products');
                     window.dbOnValue(productsRef, (snapshot) => {
                         products = [];
@@ -393,11 +475,119 @@
                             });
                         }
                         renderProducts(products);
-                    }, (error) => {
-                        console.error("Firebase Error:", error);
                     });
+
+                    // Orders Listener (Only if Admin)
+                    if (isAdmin) {
+                        const ordersRef = window.dbRef(window.db, 'orders');
+                        window.dbOnValue(ordersRef, (snapshot) => {
+                            orders = [];
+                            const data = snapshot.val();
+                            if (data) {
+                                Object.keys(data).forEach(key => {
+                                    orders.push({ id: key, ...data[key] });
+                                });
+                            }
+                            renderDashboard();
+                        });
+                    }
                 }
             }, 300);
+        }
+
+        function renderDashboard() {
+            const tableBody = document.getElementById('ordersTableBody');
+            tableBody.innerHTML = '';
+
+            let totalOrders = orders.length;
+            let pendingOrders = 0;
+            let completedOrders = 0;
+            let cancelledOrders = 0;
+
+            let todaySales = 0;
+            let monthlySales = 0;
+            let yearlySales = 0;
+            let totalSales = 0;
+
+            const now = new Date();
+            const todayStr = now.toISOString().split('T')[0];
+            const monthStr = todayStr.substring(0, 7);
+            const yearStr = todayStr.substring(0, 4);
+
+            if (orders.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #94a3b8;">No orders received yet.</td></tr>';
+            } else {
+                // Sort newest first
+                orders.sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+                orders.forEach(o => {
+                    if (o.status === 'Completed') {
+                        completedOrders++;
+                        let amount = parseFloat(o.totalPayable) || 0;
+                        totalSales += amount;
+
+                        let oDate = o.dateStr || '';
+                        if (oDate === todayStr) todaySales += amount;
+                        if (oDate.startsWith(monthStr)) monthlySales += amount;
+                        if (oDate.startsWith(yearStr)) yearlySales += amount;
+                    } else if (o.status === 'Cancelled') {
+                        cancelledOrders++;
+                    } else {
+                        pendingOrders++;
+                    }
+
+                    let badgeClass = o.status === 'Completed' ? 'badge-completed' : (o.status === 'Cancelled' ? 'badge-cancelled' : 'badge-pending');
+
+                    let tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${o.formattedDate || 'N/A'}</td>
+                        <td><b>${o.productTitle}</b><br><small>Qty: ${o.qty} | Color: ${o.color} | Size: ${o.size}</small></td>
+                        <td><b>${o.customerName}</b> (${o.customerPhone})<br><small>${o.customerAddress}</small></td>
+                        <td><b>৳ ${o.totalPayable}</b></td>
+                        <td>${o.paymentMethod}<br><small>Trx: ${o.trxId}</small></td>
+                        <td><span class="badge ${badgeClass}">${o.status || 'Pending'}</span></td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="btn-act btn-complete" onclick="updateOrderStatus('${o.id}', 'Completed')" title="Mark as Completed"><i class="fa-solid fa-check"></i></button>
+                                <button class="btn-act btn-cancel" onclick="updateOrderStatus('${o.id}', 'Cancelled')" title="Mark as Cancelled"><i class="fa-solid fa-xmark"></i></button>
+                                <button class="btn-act btn-del" onclick="deleteOrder('${o.id}')" title="Delete Order"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            }
+
+            // Update Counter Boxes
+            document.getElementById('stTotalOrders').innerText = totalOrders;
+            document.getElementById('stPendingOrders').innerText = pendingOrders;
+            document.getElementById('stCompletedOrders').innerText = completedOrders;
+            document.getElementById('stCancelledOrders').innerText = cancelledOrders;
+
+            document.getElementById('stTodaySales').innerText = `৳ ${todaySales}`;
+            document.getElementById('stMonthlySales').innerText = `৳ ${monthlySales}`;
+            document.getElementById('stYearlySales').innerText = `৳ ${yearlySales}`;
+            document.getElementById('stTotalSales').innerText = `৳ ${totalSales}`;
+        }
+
+        async function updateOrderStatus(orderId, status) {
+            try {
+                const orderRef = window.dbRef(window.db, `orders/${orderId}`);
+                await window.dbUpdate(orderRef, { status: status });
+            } catch (err) {
+                alert("Status update failed: " + err.message);
+            }
+        }
+
+        async function deleteOrder(orderId) {
+            if (confirm("Are you sure you want to delete this order history?")) {
+                try {
+                    const orderRef = window.dbRef(window.db, `orders/${orderId}`);
+                    await window.dbRemove(orderRef);
+                } catch (err) {
+                    alert("Delete failed: " + err.message);
+                }
+            }
         }
 
         function changeBanner(e) {
@@ -729,7 +919,7 @@
             }
         }
 
-        function submitOrder(e) {
+        async function submitOrder(e) {
             e.preventDefault();
             const p = products.find(item => item.id === currentActiveProductId);
             if (!p) return;
@@ -742,8 +932,12 @@
             const trx = document.getElementById('cTrx').value || 'N/A';
             const note = document.getElementById('cNote').value || 'None';
             const qty = document.getElementById('mQty').value;
-            const color = document.getElementById('colorGroup').style.display !== 'none' ? document.getElementById('mColorSelect').value : 'N/A';
-            const size = document.getElementById('sizeGroup').style.display !== 'none' ? document.getElementById('mSizeSelect').value : 'N/A';
+            
+            const colorGroup = document.getElementById('colorGroup');
+            const color = (colorGroup && colorGroup.style.display !== 'none') ? document.getElementById('mColorSelect').value : 'N/A';
+            
+            const sizeGroup = document.getElementById('sizeGroup');
+            const size = (sizeGroup && sizeGroup.style.display !== 'none') ? document.getElementById('mSizeSelect').value : 'N/A';
 
             const subtotal = p.price * qty;
             const totalPayable = subtotal + parseInt(deliveryCharge);
@@ -752,34 +946,64 @@
             confirmBtn.innerText = "Placing Order...";
             confirmBtn.disabled = true;
 
-            const templateParams = {
-                product_title: p.title,
-                product_price: `৳${p.price} x ${qty} = ৳${subtotal}`,
-                delivery_charge: `৳${deliveryCharge}`,
-                total_price: `৳${totalPayable}`,
-                product_color: color,
-                product_size: size,
-                customer_name: name,
-                customer_phone: phone,
-                customer_address: address,
-                payment_method: payment,
-                trx_id: trx,
-                customer_note: note
+            const now = new Date();
+            const dateStr = now.toISOString().split('T')[0]; // YYYY-MM-DD
+            const formattedDate = now.toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
+
+            const orderData = {
+                productTitle: p.title || 'N/A',
+                productPrice: p.price,
+                qty: qty,
+                subtotal: subtotal,
+                deliveryCharge: deliveryCharge,
+                totalPayable: totalPayable,
+                color: color,
+                size: size,
+                customerName: name,
+                customerPhone: phone,
+                customerAddress: address,
+                paymentMethod: payment,
+                trxId: trx,
+                note: note,
+                status: 'Pending',
+                dateStr: dateStr,
+                formattedDate: formattedDate,
+                timestamp: now.getTime()
             };
 
-            emailjs.send(serviceID, templateID, templateParams, 'qcn3oGQh7Ty-jsF5z')
-                .then(function(response) {
-                    alert('🎉 Order Placed Successfully! We have received your order.');
-                    confirmBtn.innerText = "Confirm Order";
-                    confirmBtn.disabled = false;
-                    closeCheckout();
-                    closeModal();
-                }, function(error) {
-                    console.error('EmailJS Error:', error);
-                    alert('Order failed to send email. Error: ' + JSON.stringify(error));
-                    confirmBtn.innerText = "Confirm Order";
-                    confirmBtn.disabled = false;
-                });
+            try {
+                // Save Order to Firebase Database
+                const ordersRef = window.dbRef(window.db, 'orders');
+                await window.dbPush(ordersRef, orderData);
+
+                // Send Email Notification via EmailJS
+                const templateParams = {
+                    product_title: p.title || 'N/A',
+                    product_price: `৳${p.price} x ${qty} = ৳${subtotal}`,
+                    delivery_charge: `৳${deliveryCharge}`,
+                    total_price: `৳${totalPayable}`,
+                    product_color: color,
+                    product_size: size,
+                    customer_name: name,
+                    customer_phone: phone,
+                    customer_address: address,
+                    payment_method: payment,
+                    trx_id: trx,
+                    customer_note: note
+                };
+
+                await emailjs.send(serviceID, templateID, templateParams, 'qcn3oGQh7Ty-jsF5z');
+
+                alert('🎉 Order Placed Successfully!');
+                closeCheckout();
+                closeModal();
+            } catch (error) {
+                console.error('Order Submission Error:', error);
+                alert('Order submitted, but failed notification: ' + error.message);
+            } finally {
+                confirmBtn.innerText = "Confirm Order";
+                confirmBtn.disabled = false;
+            }
         }
 
         function searchProducts() {
