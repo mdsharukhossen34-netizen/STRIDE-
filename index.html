@@ -190,7 +190,7 @@
         <a href="#" class="brand-name">STRIDE</a>
         
         <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Search products..." onkeyup="searchProducts()">
+            <input type="text" id="searchInput" placeholder="Search products (e.g. headphone, শার্ট)..." onkeyup="searchProducts()">
             <button><i class="fa-solid fa-magnifying-glass"></i></button>
         </div>
 
@@ -201,7 +201,7 @@
                 <a href="#" onclick="filterCategory('Fashions')">2. Fashions</a>
                 <a href="#" onclick="filterCategory('Footwear')">3. Footwear</a>
                 <a href="#" onclick="filterCategory('Watches')">4. Watches</a>
-                <a href="#" onclick="filterCategory('Audio')">5. Audio</a>
+                <a href="#" onclick="filterCategory('Audio')", onclick="filterCategory('Audio')">5. Audio</a>
                 <a href="#" onclick="filterCategory('Accessories')">6. Accessories</a>
                 <a href="#" onclick="filterCategory('Home and Living')">7. Home & Living</a>
                 <a href="#" onclick="filterCategory('Beauty')">8. Beauty</a>
@@ -281,6 +281,11 @@
                         <div class="form-group">
                             <label>Sizes (Optional)</label>
                             <input type="text" id="pSizes" placeholder="e.g. M, L, XL">
+                        </div>
+                        <div class="form-group full">
+                            <label>Search Keywords / Tags (বানান ভুল বা সমার্থক শব্দ)</label>
+                            <input type="text" id="pTags" placeholder="e.g. hedphone, হেডফোন, earphone, bluetooth">
+                            <small style="color: #64748b; font-size: 11px;">কমা (,) দিয়ে বিভিন্ন বানান বা বাংলা শব্দ লিখে দিন যাতে কাস্টমার ভুল বানান বা বাংলায় সার্চ করলেও প্রডাক্ট পায়।</small>
                         </div>
                         <div class="form-group full">
                             <label id="mediaLabel">Photos & Videos *</label>
@@ -815,6 +820,7 @@
             const category = document.getElementById('pCategory').value;
             const colors = document.getElementById('pColors').value;
             const sizes = document.getElementById('pSizes').value;
+            const tags = document.getElementById('pTags').value;
             const desc = document.getElementById('pDesc').value;
 
             try {
@@ -827,6 +833,7 @@
                         category: category,
                         colors: colors ? colors.split(',').map(s => s.trim()) : [],
                         sizes: sizes ? sizes.split(',').map(s => s.trim()) : [],
+                        tags: tags ? tags.split(',').map(s => s.trim().toLowerCase()) : [],
                         desc: desc
                     };
 
@@ -863,6 +870,7 @@
                         category: category,
                         colors: colors ? colors.split(',').map(s => s.trim()) : [],
                         sizes: sizes ? sizes.split(',').map(s => s.trim()) : [],
+                        tags: tags ? tags.split(',').map(s => s.trim().toLowerCase()) : [],
                         desc: desc,
                         media: finalMedia,
                         createdAt: new Date().getTime()
@@ -896,6 +904,7 @@
             document.getElementById('pCategory').value = p.category;
             document.getElementById('pColors').value = p.colors ? p.colors.join(', ') : '';
             document.getElementById('pSizes').value = p.sizes ? p.sizes.join(', ') : '';
+            document.getElementById('pTags').value = p.tags ? p.tags.join(', ') : '';
             document.getElementById('pDesc').value = p.desc;
 
             document.getElementById('panelTitle').innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Edit Product';
@@ -1173,9 +1182,28 @@
             }
         }
 
+        // স্মার্ট সার্চ সিস্টেম (বানান ভুল বা ট্যাগের ভিত্তিতে খোঁজার জন্য আপডেট করা হয়েছে)
         function searchProducts() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = products.filter(p => p.title.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query));
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            if (!query) {
+                renderProducts(products);
+                return;
+            }
+
+            const filtered = products.filter(p => {
+                const titleMatch = p.title && p.title.toLowerCase().includes(query);
+                const descMatch = p.desc && p.desc.toLowerCase().includes(query);
+                const catMatch = p.category && p.category.toLowerCase().includes(query);
+                
+                // ট্যাগের মধ্যে মিল আছে কিনা চেক করা (যেমন: শার্ট, hedphone ইত্যাদি)
+                let tagMatch = false;
+                if (p.tags && Array.isArray(p.tags)) {
+                    tagMatch = p.tags.some(tag => tag.includes(query) || query.includes(tag));
+                }
+
+                return titleMatch || descMatch || catMatch || tagMatch;
+            });
+
             renderProducts(filtered);
         }
 
