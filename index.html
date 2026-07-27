@@ -6,10 +6,11 @@
     <title>STRIDE - Official Store</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- EmailJS SDK -->
+    <!-- EmailJS Official SDK v3 -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
         (function() {
+            // Your EmailJS Public Key Integrated
             emailjs.init("7hstmbvM9NgYnX4LI");
         })();
     </script>
@@ -323,6 +324,8 @@
 
     <script>
         const myNumber = "01880595381";
+        const serviceID = "service_y27kukq";
+        const templateID = "template_6qggs1k";
 
         let products = JSON.parse(localStorage.getItem('stride_products')) || [];
         let isAdmin = false;
@@ -397,7 +400,6 @@
             });
         }
 
-        // Save / Update Product
         function saveProduct(e) {
             e.preventDefault();
 
@@ -410,7 +412,6 @@
             const desc = document.getElementById('pDesc').value;
 
             if (editId) {
-                // EDIT MODE
                 const index = products.findIndex(p => p.id == editId);
                 if (index !== -1) {
                     products[index].title = title;
@@ -420,7 +421,6 @@
                     products[index].sizes = sizes ? sizes.split(',').map(s => s.trim()) : [];
                     products[index].desc = desc;
 
-                    // If new media uploaded
                     if (selectedMediaList.length > 0) {
                         let finalMedia = [...selectedMediaList];
                         if (coverIndex > 0) {
@@ -436,7 +436,6 @@
                     alert('🎉 Product Updated Successfully!');
                 }
             } else {
-                // NEW PRODUCT MODE
                 if (selectedMediaList.length === 0) {
                     alert("Please select at least one Photo or Video!");
                     return;
@@ -702,7 +701,8 @@
                 customer_note: note
             };
 
-            emailjs.send('service_y27kukq', 'template_6qggs1k', templateParams)
+            // Modern & Error-free EmailJS Call
+            emailjs.send(serviceID, templateID, templateParams)
                 .then(function(response) {
                     alert('🎉 Order Placed Successfully! We have received your order.');
                     confirmBtn.innerText = "Confirm Order";
