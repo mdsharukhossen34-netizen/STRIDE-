@@ -349,7 +349,7 @@
                 <div class="section-header">
                     <span><i class="fa-solid fa-chart-line"></i> Product Sales & Cancelled Metrics</span>
                 </div>
-                <p style="font-size: 13px; color: #64748b; margin-bottom: 15px;">প্রত্যেকটি প্রডাক্ট কতবার সফলভাবে বিক্রি হয়েছে এবং কতবার বাতিল হয়েছে তার অটোমেটিক ট্র্যাকিং হিস্ট্রি:</p>
+                <p style="font-size: 13px; color: #64748b; margin-bottom: 15px;">প্রত্যেকটি প্রডাক্ট কতবার সফলভাবে বিক্রি হয়েছে, চলমান রয়েছে এবং বাতিল হয়েছে তার অটোমেটিক ট্র্যাকিং হিস্ট্রি:</p>
                 
                 <div class="table-wrapper">
                     <table class="custom-table">
@@ -358,13 +358,14 @@
                                 <th>Product Title</th>
                                 <th>Category</th>
                                 <th>Unit Price</th>
+                                <th>Pending Orders</th>
                                 <th>Completed Sales</th>
                                 <th>Cancelled Orders</th>
                                 <th>Total Revenue Generated</th>
                             </tr>
                         </thead>
                         <tbody id="productSalesTableBody">
-                            <tr><td colspan="6" style="text-align: center; color: #94a3b8;">Loading sales metrics...</td></tr>
+                            <tr><td colspan="7" style="text-align: center; color: #94a3b8;">Loading sales metrics...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -585,21 +586,21 @@
                         if (isAdmin) renderProductSalesTable();
                     });
 
-                    // Orders Listener (Only if Admin)
-                    if (isAdmin) {
-                        const ordersRef = window.dbRef(window.db, 'orders');
-                        window.dbOnValue(ordersRef, (snapshot) => {
-                            orders = [];
-                            const data = snapshot.val();
-                            if (data) {
-                                Object.keys(data).forEach(key => {
-                                    orders.push({ id: key, ...data[key] });
-                                });
-                            }
+                    // Orders Listener (Always sync to keep metrics updated)
+                    const ordersRef = window.dbRef(window.db, 'orders');
+                    window.dbOnValue(ordersRef, (snapshot) => {
+                        orders = [];
+                        const data = snapshot.val();
+                        if (data) {
+                            Object.keys(data).forEach(key => {
+                                orders.push({ id: key, ...data[key] });
+                            });
+                        }
+                        if (isAdmin) {
                             renderDashboard();
                             renderProductSalesTable();
-                        });
-                    }
+                        }
+                    });
                 }
             }, 300);
         }
@@ -691,13 +692,14 @@
             tableBody.innerHTML = '';
 
             if (products.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #94a3b8;">No products found in store.</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #94a3b8;">No products found in store.</td></tr>';
                 return;
             }
 
             products.forEach(p => {
                 let pOrders = orders.filter(o => o.productId === p.id || o.productTitle === p.title);
                 
+                let pendingQty = 0;
                 let completedQty = 0;
                 let cancelledQty = 0;
                 let totalRev = 0;
@@ -709,6 +711,8 @@
                         totalRev += parseFloat(o.subtotal || (p.price * qty));
                     } else if (o.status === 'Cancelled') {
                         cancelledQty += qty;
+                    } else {
+                        pendingQty += qty;
                     }
                 });
 
@@ -717,6 +721,7 @@
                     <td><b>${p.title}</b></td>
                     <td>${p.category || 'N/A'}</td>
                     <td>৳ ${p.price}</td>
+                    <td><span style="color:#d97706; font-weight:800; font-size:15px;">${pendingQty}</span></td>
                     <td><span style="color:#059669; font-weight:800; font-size:15px;">${completedQty}</span></td>
                     <td><span style="color:#dc2626; font-weight:800; font-size:15px;">${cancelledQty}</span></td>
                     <td><b>৳ ${totalRev}</b></td>
