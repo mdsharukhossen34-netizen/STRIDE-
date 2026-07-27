@@ -6,13 +6,41 @@
     <title>STRIDE - Official Store</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- EmailJS Official SDK v3 -->
+    <!-- EmailJS Official SDK -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
         (function() {
-            // Your EmailJS Public Key Integrated
             emailjs.init("qcn3oGQh7Ty-jsF5z");
         })();
+    </script>
+
+    <!-- Firebase SDK (v10) - Realtime Database -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getDatabase, ref, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCxG98q6OfM1hr7cRGDH2cKp4CK8S5I4ss",
+            authDomain: "stride-86bfc.firebaseapp.com",
+            databaseURL: "https://stride-86bfc-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "stride-86bfc",
+            storageBucket: "stride-86bfc.firebasestorage.app",
+            messagingSenderId: "1007121646707",
+            appId: "1:1007121646707:web:2363c4354a185a7f931606",
+            measurementId: "G-0P7T26MWQ7"
+        };
+
+        // Initialize Firebase & Realtime Database
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Global variables for database functions
+        window.db = db;
+        window.dbRef = ref;
+        window.dbPush = push;
+        window.dbOnValue = onValue;
+        window.dbUpdate = update;
+        window.dbRemove = remove;
     </script>
 
     <style>
@@ -327,7 +355,7 @@
         const serviceID = "service_y27kukq";
         const templateID = "template_6qggs1k";
 
-        let products = JSON.parse(localStorage.getItem('stride_products')) || [];
+        let products = [];
         let isAdmin = false;
         let selectedMediaList = [];
         let coverIndex = 0;
@@ -346,8 +374,31 @@
                 document.getElementById('bannerImage').src = savedBanner;
             }
 
-            renderProducts(products);
+            // Realtime Database Listener
+            initDatabaseListener();
         };
+
+        function initDatabaseListener() {
+            let checkFirebase = setInterval(() => {
+                if (window.db && window.dbRef) {
+                    clearInterval(checkFirebase);
+                    
+                    const productsRef = window.dbRef(window.db, 'products');
+                    window.dbOnValue(productsRef, (snapshot) => {
+                        products = [];
+                        const data = snapshot.val();
+                        if (data) {
+                            Object.keys(data).forEach(key => {
+                                products.push({ id: key, ...data[key] });
+                            });
+                        }
+                        renderProducts(products);
+                    }, (error) => {
+                        console.error("Firebase Error:", error);
+                    });
+                }
+            }, 300);
+        }
 
         function changeBanner(e) {
             const file = e.target.files[0];
@@ -400,8 +451,12 @@
             });
         }
 
-        function saveProduct(e) {
+        async function saveProduct(e) {
             e.preventDefault();
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.innerText = "Saving to Database...";
+            submitBtn.disabled = true;
 
             const editId = document.getElementById('editProductId').value;
             const title = document.getElementById('pTitle').value;
@@ -411,15 +466,17 @@
             const sizes = document.getElementById('pSizes').value;
             const desc = document.getElementById('pDesc').value;
 
-            if (editId) {
-                const index = products.findIndex(p => p.id == editId);
-                if (index !== -1) {
-                    products[index].title = title;
-                    products[index].price = price;
-                    products[index].category = category;
-                    products[index].colors = colors ? colors.split(',').map(s => s.trim()) : [];
-                    products[index].sizes = sizes ? sizes.split(',').map(s => s.trim()) : [];
-                    products[index].desc = desc;
+            try {
+                if (editId) {
+                    const itemRef = window.dbRef(window.db, `products/${editId}`);
+                    let updateData = {
+                        title: title,
+                        price: price,
+                        category: category,
+                        colors: colors ? colors.split(',').map(s => s.trim()) : [],
+                        sizes: sizes ? sizes.split(',').map(s => s.trim()) : [],
+                        desc: desc
+                    };
 
                     if (selectedMediaList.length > 0) {
                         let finalMedia = [...selectedMediaList];
@@ -427,43 +484,48 @@
                             const coverItem = finalMedia.splice(coverIndex, 1)[0];
                             finalMedia.unshift(coverItem);
                         }
-                        products[index].media = finalMedia;
+                        updateData.media = finalMedia;
                     }
 
-                    localStorage.setItem('stride_products', JSON.stringify(products));
-                    renderProducts(products);
-                    resetAdminForm();
+                    await window.dbUpdate(itemRef, updateData);
                     alert('🎉 Product Updated Successfully!');
-                }
-            } else {
-                if (selectedMediaList.length === 0) {
-                    alert("Please select at least one Photo or Video!");
-                    return;
-                }
+                    resetAdminForm();
+                } else {
+                    if (selectedMediaList.length === 0) {
+                        alert("Please select at least one Photo or Video!");
+                        submitBtn.innerText = "Save Product";
+                        submitBtn.disabled = false;
+                        return;
+                    }
 
-                let finalMedia = [...selectedMediaList];
-                if (coverIndex > 0) {
-                    const coverItem = finalMedia.splice(coverIndex, 1)[0];
-                    finalMedia.unshift(coverItem);
+                    let finalMedia = [...selectedMediaList];
+                    if (coverIndex > 0) {
+                        const coverItem = finalMedia.splice(coverIndex, 1)[0];
+                        finalMedia.unshift(coverItem);
+                    }
+
+                    const newProduct = {
+                        title: title,
+                        price: price,
+                        category: category,
+                        colors: colors ? colors.split(',').map(s => s.trim()) : [],
+                        sizes: sizes ? sizes.split(',').map(s => s.trim()) : [],
+                        desc: desc,
+                        media: finalMedia,
+                        createdAt: new Date().getTime()
+                    };
+
+                    const productsRef = window.dbRef(window.db, 'products');
+                    await window.dbPush(productsRef, newProduct);
+                    alert('🎉 Product Published Live!');
+                    resetAdminForm();
                 }
-
-                const newProduct = {
-                    id: Date.now(),
-                    title: title,
-                    price: price,
-                    category: category,
-                    colors: colors ? colors.split(',').map(s => s.trim()) : [],
-                    sizes: sizes ? sizes.split(',').map(s => s.trim()) : [],
-                    desc: desc,
-                    media: finalMedia
-                };
-
-                products.unshift(newProduct);
-                localStorage.setItem('stride_products', JSON.stringify(products));
-                
-                renderProducts(products);
-                resetAdminForm();
-                alert('🎉 Product Saved Successfully!');
+            } catch (err) {
+                console.error("Save Error:", err);
+                alert("Error saving product: " + err.message);
+            } finally {
+                submitBtn.innerText = "Save Product";
+                submitBtn.disabled = false;
             }
         }
 
@@ -514,12 +576,16 @@
             });
         }
 
-        function deleteProduct(e, id) {
+        async function deleteProduct(e, id) {
             e.stopPropagation();
             if (confirm('Are you sure you want to delete this product?')) {
-                products = products.filter(p => p.id !== id);
-                localStorage.setItem('stride_products', JSON.stringify(products));
-                renderProducts(products);
+                try {
+                    const itemRef = window.dbRef(window.db, `products/${id}`);
+                    await window.dbRemove(itemRef);
+                    alert("Product deleted successfully!");
+                } catch (err) {
+                    alert("Delete failed: " + err.message);
+                }
             }
         }
 
@@ -528,7 +594,7 @@
             grid.innerHTML = '';
 
             if (items.length === 0) {
-                grid.innerHTML = '<p style="color:#94a3b8;">No products available.</p>';
+                grid.innerHTML = '<p style="color:#94a3b8;">No products available in Store.</p>';
                 return;
             }
 
@@ -539,8 +605,8 @@
 
                 let adminActionsHtml = isAdmin ? `
                     <div class="admin-card-actions" style="display:flex;">
-                        <button class="edit-btn" onclick="editProduct(event, ${p.id})" title="Edit Price / Info"><i class="fa-solid fa-pen"></i></button>
-                        <button class="delete-btn" onclick="deleteProduct(event, ${p.id})" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                        <button class="edit-btn" onclick="editProduct(event, '${p.id}')" title="Edit Price / Info"><i class="fa-solid fa-pen"></i></button>
+                        <button class="delete-btn" onclick="deleteProduct(event, '${p.id}')" title="Delete"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 ` : '';
 
@@ -701,7 +767,6 @@
                 customer_note: note
             };
 
-            // Corrected EmailJS Call
             emailjs.send(serviceID, templateID, templateParams, 'qcn3oGQh7Ty-jsF5z')
                 .then(function(response) {
                     alert('🎉 Order Placed Successfully! We have received your order.');
