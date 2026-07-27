@@ -11,7 +11,7 @@
     <script type="text/javascript">
         (function() {
             // Your EmailJS Public Key Integrated
-            emailjs.init("7hstmbvM9NgYnX4LI");
+            emailjs.init("qcn3oGQh7Ty-jsF5z");
         })();
     </script>
 
@@ -701,8 +701,8 @@
                 customer_note: note
             };
 
-            // Modern & Error-free EmailJS Call
-            emailjs.send(serviceID, templateID, templateParams)
+            // Corrected EmailJS Call
+            emailjs.send(serviceID, templateID, templateParams, 'qcn3oGQh7Ty-jsF5z')
                 .then(function(response) {
                     alert('🎉 Order Placed Successfully! We have received your order.');
                     confirmBtn.innerText = "Confirm Order";
