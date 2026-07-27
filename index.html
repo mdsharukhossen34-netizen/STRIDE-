@@ -130,6 +130,9 @@
 
         /* Store Product Grid */
         .main-container { width: 92%; max-width: 1400px; margin: 30px auto; }
+        .store-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+        .reset-filter-btn { background: #e2e8f0; color: #334155; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; display: none; align-items: center; gap: 5px; }
+        .reset-filter-btn:hover { background: #cbd5e1; }
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
         .product-card { background: #fff; border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0; cursor: pointer; transition: 0.3s; position: relative; }
         .product-card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
@@ -187,11 +190,11 @@
 
     <!-- Header -->
     <header>
-        <a href="#" class="brand-name">STRIDE</a>
+        <a href="#" class="brand-name" onclick="resetFilters()">STRIDE</a>
         
         <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Search products..." onkeyup="searchProducts()">
-            <button><i class="fa-solid fa-magnifying-glass"></i></button>
+            <input type="text" id="searchInput" placeholder="Search products, categories, colors..." onkeyup="handleSearchInput()">
+            <button onclick="executeSearch()"><i class="fa-solid fa-magnifying-glass"></i></button>
         </div>
 
         <div class="category-dropdown">
@@ -413,7 +416,12 @@
 
     <!-- Store Products Display Section -->
     <div class="main-container">
-        <h2 style="margin-bottom: 20px; font-size: 20px; color: #0f172a;">All Products</h2>
+        <div class="store-header-row">
+            <h2 id="storeHeading" style="font-size: 20px; color: #0f172a;">All Products</h2>
+            <button id="resetFilterBtn" class="reset-filter-btn" onclick="resetFilters()">
+                <i class="fa-solid fa-xmark"></i> Clear Search / Filter
+            </button>
+        </div>
         <div class="product-grid" id="productGrid"></div>
     </div>
 
@@ -531,6 +539,10 @@
         let selectedMediaList = [];
         let coverIndex = 0;
         let currentActiveProductId = null;
+        
+        // Advanced Search Mechanism Variables
+        let searchDebounceTimeout = null;
+        let activeCategoryFilter = null;
 
         window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -582,7 +594,7 @@
                                 products.push({ id: key, ...data[key] });
                             });
                         }
-                        renderProducts(products);
+                        applyCurrentFilters();
                         if (isAdmin) renderProductSalesTable();
                     });
 
@@ -950,7 +962,7 @@
             grid.innerHTML = '';
 
             if (items.length === 0) {
-                grid.innerHTML = '<p style="color:#94a3b8;">No products available in Store.</p>';
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #94a3b8; font-size: 15px;"><i class="fa-solid fa-box-open" style="font-size: 30px; margin-bottom: 10px;"></i><br>No matching products found.</div>';
                 return;
             }
 
@@ -981,6 +993,73 @@
                 `;
                 grid.appendChild(card);
             });
+        }
+
+        /* -------------------------------------------------------------
+           UPGRADED SEARCH & FILTERING LOGIC
+        ------------------------------------------------------------- */
+        function handleSearchInput() {
+            clearTimeout(searchDebounceTimeout);
+            searchDebounceTimeout = setTimeout(() => {
+                applyCurrentFilters();
+            }, 250);
+        }
+
+        function executeSearch() {
+            clearTimeout(searchDebounceTimeout);
+            applyCurrentFilters();
+        }
+
+        function filterCategory(catName) {
+            activeCategoryFilter = catName;
+            applyCurrentFilters();
+        }
+
+        function resetFilters() {
+            activeCategoryFilter = null;
+            document.getElementById('searchInput').value = '';
+            applyCurrentFilters();
+        }
+
+        function applyCurrentFilters() {
+            const query = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+            const resetBtn = document.getElementById('resetFilterBtn');
+            const storeHeading = document.getElementById('storeHeading');
+
+            let filtered = products;
+
+            // 1. Filter by Category if selected
+            if (activeCategoryFilter) {
+                filtered = filtered.filter(p => (p.category || '').toLowerCase() === activeCategoryFilter.toLowerCase());
+            }
+
+            // 2. Search Keyword Matching across Title, Description, Category & Colors
+            if (query !== '') {
+                filtered = filtered.filter(p => {
+                    const titleMatch = (p.title || '').toLowerCase().includes(query);
+                    const descMatch = (p.desc || '').toLowerCase().includes(query);
+                    const catMatch = (p.category || '').toLowerCase().includes(query);
+                    const colorsMatch = Array.isArray(p.colors) && p.colors.some(c => c.toLowerCase().includes(query));
+
+                    return titleMatch || descMatch || catMatch || colorsMatch;
+                });
+            }
+
+            // Update UI Feedback and Section Titles
+            if (activeCategoryFilter || query !== '') {
+                resetBtn.style.display = 'inline-flex';
+                
+                let titleParts = [];
+                if (activeCategoryFilter) titleParts.push(`Category: "${activeCategoryFilter}"`);
+                if (query !== '') titleParts.push(`Search: "${query}"`);
+                
+                storeHeading.innerText = `Filtered Results (${titleParts.join(' & ')})`;
+            } else {
+                resetBtn.style.display = 'none';
+                storeHeading.innerText = 'All Products';
+            }
+
+            renderProducts(filtered);
         }
 
         function openModal(id) {
@@ -1171,17 +1250,6 @@
                 confirmBtn.innerText = "Confirm Order";
                 confirmBtn.disabled = false;
             }
-        }
-
-        function searchProducts() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = products.filter(p => p.title.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query));
-            renderProducts(filtered);
-        }
-
-        function filterCategory(catName) {
-            const filtered = products.filter(p => p.category === catName);
-            renderProducts(filtered);
         }
     </script>
 </body>
