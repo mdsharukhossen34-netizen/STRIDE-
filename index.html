@@ -190,7 +190,7 @@
         <a href="#" class="brand-name">STRIDE</a>
         
         <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Search products (e.g. headphone, শার্ট)..." onkeyup="searchProducts()">
+            <input type="text" id="searchInput" placeholder="Search products" onkeyup="searchProducts()">
             <button><i class="fa-solid fa-magnifying-glass"></i></button>
         </div>
 
@@ -201,7 +201,7 @@
                 <a href="#" onclick="filterCategory('Fashions')">2. Fashions</a>
                 <a href="#" onclick="filterCategory('Footwear')">3. Footwear</a>
                 <a href="#" onclick="filterCategory('Watches')">4. Watches</a>
-                <a href="#" onclick="filterCategory('Audio')", onclick="filterCategory('Audio')">5. Audio</a>
+                <a href="#" onclick="filterCategory('Audio')">5. Audio</a>
                 <a href="#" onclick="filterCategory('Accessories')">6. Accessories</a>
                 <a href="#" onclick="filterCategory('Home and Living')">7. Home & Living</a>
                 <a href="#" onclick="filterCategory('Beauty')">8. Beauty</a>
@@ -248,15 +248,15 @@
                     <div class="form-grid">
                         <div class="form-group">
                             <label>Product Title *</label>
-                            <input type="text" id="pTitle" required placeholder="e.g. Wireless Headphone">
+                            <input type="text" id="pTitle" required placeholder="">
                         </div>
                         <div class="form-group">
                             <label>Selling Price (BDT) *</label>
-                            <input type="number" id="pPrice" required placeholder="e.g. 1200">
+                            <input type="number" id="pPrice" required placeholder="">
                         </div>
                         <div class="form-group">
                             <label>Cost / Buying Price (BDT) [For Profit Calculation]</label>
-                            <input type="number" id="pCostPrice" placeholder="e.g. 800">
+                            <input type="number" id="pCostPrice" placeholder="">
                         </div>
                         <div class="form-group">
                             <label>Category *</label>
@@ -276,16 +276,15 @@
                         </div>
                         <div class="form-group">
                             <label>Colors (Optional)</label>
-                            <input type="text" id="pColors" placeholder="e.g. Black, Red">
+                            <input type="text" id="pColors" placeholder="">
                         </div>
                         <div class="form-group">
                             <label>Sizes (Optional)</label>
-                            <input type="text" id="pSizes" placeholder="e.g. M, L, XL">
+                            <input type="text" id="pSizes" placeholder="">
                         </div>
                         <div class="form-group full">
-                            <label>Search Keywords / Tags (বানান ভুল বা সমার্থক শব্দ)</label>
-                            <input type="text" id="pTags" placeholder="e.g. hedphone, হেডফোন, earphone, bluetooth">
-                            <small style="color: #64748b; font-size: 11px;">কমা (,) দিয়ে বিভিন্ন বানান বা বাংলা শব্দ লিখে দিন যাতে কাস্টমার ভুল বানান বা বাংলায় সার্চ করলেও প্রডাক্ট পায়।</small>
+                            <label>Search Keywords / Tags</label>
+                            <input type="text" id="pTags" placeholder="">
                         </div>
                         <div class="form-group full">
                             <label id="mediaLabel">Photos & Videos *</label>
@@ -1182,9 +1181,11 @@
             }
         }
 
-        // স্মার্ট সার্চ সিস্টেম (বানান ভুল বা ট্যাগের ভিত্তিতে খোঁজার জন্য আপডেট করা হয়েছে)
+        // স্মার্ট ও অল-ইন-ওয়ান সার্চ সিস্টেম
         function searchProducts() {
-            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const rawQuery = document.getElementById('searchInput').value;
+            const query = rawQuery.toLowerCase().trim();
+            
             if (!query) {
                 renderProducts(products);
                 return;
@@ -1195,12 +1196,18 @@
                 const descMatch = p.desc && p.desc.toLowerCase().includes(query);
                 const catMatch = p.category && p.category.toLowerCase().includes(query);
                 
-                // ট্যাগের মধ্যে মিল আছে কিনা চেক করা (যেমন: শার্ট, hedphone ইত্যাদি)
+                // ট্যাগের মধ্যে বাংলা বা ইংরেজি সব ফিল্টার চেক করা
                 let tagMatch = false;
                 if (p.tags && Array.isArray(p.tags)) {
-                    tagMatch = p.tags.some(tag => tag.includes(query) || query.includes(tag));
+                    tagMatch = p.tags.some(tag => {
+                        const cleanTag = String(tag).toLowerCase().trim();
+                        return cleanTag.includes(query) || query.includes(cleanTag);
+                    });
+                } else if (typeof p.tags === 'string') {
+                    tagMatch = p.tags.toLowerCase().includes(query);
                 }
 
+                // Title, Description, Category, অথবা Tags-এর যেকোনো জায়গায় মিললেই প্রোডাক্ট দেখাবে
                 return titleMatch || descMatch || catMatch || tagMatch;
             });
 
