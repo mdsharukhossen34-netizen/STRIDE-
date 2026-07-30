@@ -112,7 +112,7 @@
         .stat-card.yellow { background: #fffbeb; border-color: #fde68a; } .stat-card.yellow .value { color: #d97706; }
         .stat-card.purple { background: #f3e8ff; border-color: #d8b4fe; } .stat-card.purple .value { color: #9333ea; }
 
-        /* Orders & Sales Tables */
+        /* Tables */
         .table-wrapper { overflow-x: auto; }
         table.custom-table { width: 100%; border-collapse: collapse; font-size: 13px; }
         table.custom-table th, table.custom-table td { padding: 12px 14px; border: 1px solid #e2e8f0; text-align: left; vertical-align: middle; }
@@ -123,7 +123,6 @@
         .badge-cancelled { background: #fee2e2; color: #dc2626; }
         .badge-code { background: #e0f2fe; color: #0284c7; border: 1px solid #7dd3fc; margin-right: 5px; font-family: monospace; font-size: 11px; display: inline-block; }
 
-        /* Product Cell with Image */
         .product-cell { display: flex; align-items: center; gap: 12px; }
         .table-product-img { width: 48px; height: 48px; border-radius: 6px; object-fit: cover; border: 1px solid #cbd5e1; flex-shrink: 0; }
 
@@ -134,21 +133,22 @@
         .btn-del { background: #64748b; }
         .btn-copy { background: #0284c7; }
 
-        /* Store Product Grid */
+        /* Store Product Grid Layout */
         .main-container { width: 92%; max-width: 1400px; margin: 30px auto; }
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
         .product-card { background: #fff; border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0; cursor: pointer; transition: 0.3s; position: relative; }
         .product-card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
         .product-card img, .product-card video { width: 100%; height: 210px; object-fit: cover; }
-        .product-card-body { padding: 15px; }
-        .product-card-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .product-card-price { font-size: 17px; font-weight: 800; color: #ef4444; }
-        .product-card-code { font-size: 11px; font-weight: 700; color: #0284c7; background: #e0f2fe; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-bottom: 6px; font-family: monospace; }
+        .product-card-body { padding: 12px; }
+        .product-card-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .product-card-price { font-size: 16px; font-weight: 800; color: #ef4444; }
+        .product-card-code { font-size: 10px; font-weight: 700; color: #0284c7; background: #e0f2fe; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-bottom: 6px; font-family: monospace; }
+        .product-card-stock { font-size: 11px; color: #059669; font-weight: 700; float: right; }
+        .product-card-stock.out { color: #dc2626; }
 
         .admin-card-actions { display: none; position: absolute; top: 10px; right: 10px; gap: 6px; z-index: 10; }
-        .edit-btn { background: #2563eb; color: #fff; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; }
-        .delete-btn { background: #ef4444; color: #fff; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; }
-        .link-btn { background: #0284c7; color: #fff; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; }
+        .edit-btn, .delete-btn, .link-btn { color: #fff; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; }
+        .edit-btn { background: #2563eb; } .delete-btn { background: #ef4444; } .link-btn { background: #0284c7; }
 
         /* Modals */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
@@ -162,13 +162,26 @@
 
         .modal-info h2 { font-size: 20px; margin-bottom: 4px; color: #0f172a; }
         .modal-code-badge { display: inline-block; background: #e0f2fe; color: #0284c7; font-weight: 700; font-size: 12px; padding: 3px 8px; border-radius: 4px; margin-bottom: 10px; font-family: monospace; }
+        .modal-stock-badge { display: inline-block; font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 4px; margin-left: 5px; }
+        .stock-in { background: #d1fae5; color: #059669; }
+        .stock-out { background: #fee2e2; color: #dc2626; }
+
         .modal-price { font-size: 22px; color: #ef4444; font-weight: 800; margin-bottom: 12px; }
         .modal-desc { font-size: 13px; color: #475569; margin-bottom: 15px; line-height: 1.5; }
         .option-group { margin-bottom: 12px; }
         .option-group label { font-size: 12px; font-weight: 700; display: block; margin-bottom: 5px; color: #334155; text-transform: uppercase; }
         .option-group select, .option-group input { padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; width: 100%; font-size: 13px; }
         .buy-now-btn { background: #2563eb; color: #fff; border: none; padding: 12px; width: 100%; font-size: 14px; font-weight: 700; border-radius: 6px; cursor: pointer; margin-top: 15px; text-transform: uppercase; }
+        .buy-now-btn:disabled { background: #94a3b8; cursor: not-allowed; }
         .share-link-btn { background: #f1f5f9; color: #0284c7; border: 1px solid #bae6fd; padding: 8px; width: 100%; font-size: 12px; font-weight: 700; border-radius: 6px; cursor: pointer; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+
+        /* Password Auth Modal */
+        .auth-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.9); z-index: 5000; justify-content: center; align-items: center; }
+        .auth-box { background: #fff; width: 90%; max-width: 380px; padding: 30px; border-radius: 12px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .auth-box i { font-size: 40px; color: #2563eb; margin-bottom: 15px; }
+        .auth-box h3 { font-size: 20px; color: #0f172a; margin-bottom: 10px; }
+        .auth-box input { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; margin-bottom: 15px; outline: none; text-align: center; }
+        .auth-box button { width: 100%; background: #2563eb; color: #fff; border: none; padding: 12px; font-size: 14px; font-weight: 700; border-radius: 6px; cursor: pointer; }
 
         .checkout-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 3000; justify-content: center; align-items: center; }
         .checkout-box { background: #fff; width: 90%; max-width: 480px; border-radius: 12px; padding: 25px; position: relative; max-height: 90vh; overflow-y: auto; }
@@ -182,7 +195,8 @@
 
         .payment-info-box { background: #e0f2fe; border: 1px solid #7dd3fc; border-radius: 6px; padding: 10px 12px; margin-top: 8px; font-size: 13px; color: #0369a1; display: none; }
 
-        @media (max-width: 900px) {
+        /* RESPONSIVE DESIGN - MOBILE GRID VIEW (2 PRODUCTS PER ROW) */
+        @media (max-width: 768px) {
             .admin-wrapper { flex-direction: column; }
             .admin-sidebar { width: 100%; }
             .form-grid { grid-template-columns: 1fr; }
@@ -190,10 +204,32 @@
             .modal-content { grid-template-columns: 1fr; }
             header { flex-direction: column; gap: 12px; }
             .search-box { width: 100%; }
+            .banner-img { height: 180px; }
+
+            /* Mobile 2 Column Grid Layout Fix */
+            .main-container { width: 95%; margin: 15px auto; }
+            .product-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; }
+            .product-card img, .product-card video { height: 150px !important; }
+            .product-card-body { padding: 8px !important; }
+            .product-card-title { font-size: 12px !important; }
+            .product-card-price { font-size: 14px !important; }
+            .product-card-code { font-size: 9px !important; padding: 1px 4px !important; }
+            .product-card-stock { font-size: 9px !important; }
         }
     </style>
 </head>
 <body>
+
+    <!-- Admin Authentication Modal -->
+    <div class="auth-modal" id="adminAuthModal">
+        <div class="auth-box">
+            <i class="fa-solid fa-lock"></i>
+            <h3>Admin Access Locked</h3>
+            <p style="font-size: 12px; color: #64748b; margin-bottom: 15px;">Enter Admin Password to unlock Dashboard</p>
+            <input type="password" id="adminPassInput" placeholder="Enter Password">
+            <button onclick="verifyAdminPassword()">Unlock Admin</button>
+        </div>
+    </div>
 
     <!-- Header -->
     <header>
@@ -241,6 +277,7 @@
                 <li><a onclick="switchTab('allOrders')" id="menuAllOrders"><i class="fa-solid fa-cart-shopping"></i> All Orders</a></li>
                 <li><a onclick="switchTab('sales')" id="menuSales"><i class="fa-solid fa-chart-line"></i> Sales</a></li>
                 <li><a onclick="switchTab('amount')" id="menuAmount"><i class="fa-solid fa-wallet"></i> Amount</a></li>
+                <li><a onclick="switchTab('security')" id="menuSecurity"><i class="fa-solid fa-shield-halved"></i> Security</a></li>
             </ul>
         </div>
 
@@ -263,6 +300,10 @@
                         <div class="form-group">
                             <label>Product Code / SKU (e.g. ST-101) [Optional]</label>
                             <input type="text" id="pCode" placeholder="Enter custom code or auto-generated">
+                        </div>
+                        <div class="form-group">
+                            <label>Stock Quantity (পণ্য সংখ্যা) *</label>
+                            <input type="number" id="pStock" required min="0" placeholder="e.g. 20">
                         </div>
                         <div class="form-group">
                             <label>Selling Price (BDT) *</label>
@@ -365,9 +406,9 @@
             <!-- 3. PRODUCT SALES PERFORMANCE TAB -->
             <div class="tab-section" id="tabSales">
                 <div class="section-header">
-                    <span><i class="fa-solid fa-chart-line"></i> Product Sales & Cancelled Metrics</span>
+                    <span><i class="fa-solid fa-chart-line"></i> Product Sales & Stock Metrics</span>
                 </div>
-                <p style="font-size: 13px; color: #64748b; margin-bottom: 15px;">প্রত্যেকটি প্রডাক্ট কতবার সফলভাবে বিক্রি হয়েছে, চলমান রয়েছে এবং বাতিল হয়েছে তার অটোমেটিক ট্র্যাকিং হিস্ট্রি:</p>
+                <p style="font-size: 13px; color: #64748b; margin-bottom: 15px;">প্রত্যেকটি প্রডাক্ট কতবার বিক্রয় হয়েছে, বাতিল হয়েছে এবং বর্তমানে কত পিস স্টকে আছে তা অটোমেটিক ট্র্যাকিং হিস্ট্রি:</p>
                 
                 <div class="table-wrapper">
                     <table class="custom-table">
@@ -375,11 +416,11 @@
                             <tr>
                                 <th>Product Details & Code</th>
                                 <th>Category</th>
+                                <th>Stock Left</th>
                                 <th>Unit Price</th>
                                 <th>Pending Orders</th>
                                 <th>Completed Sales</th>
-                                <th>Cancelled Orders</th>
-                                <th>Total Revenue Generated</th>
+                                <th>Total Revenue</th>
                                 <th>Direct Link</th>
                             </tr>
                         </thead>
@@ -427,6 +468,29 @@
                 </div>
             </div>
 
+            <!-- 5. SECURITY & PASSWORD CHANGE TAB -->
+            <div class="tab-section" id="tabSecurity">
+                <div class="section-header">
+                    <span><i class="fa-solid fa-shield-halved"></i> Admin Security & Password Change</span>
+                </div>
+
+                <form style="max-width: 450px;" onsubmit="changeAdminPassword(event)">
+                    <div class="form-group">
+                        <label>Current Password *</label>
+                        <input type="password" id="secCurrentPass" required placeholder="Enter current password">
+                    </div>
+                    <div class="form-group">
+                        <label>New Password *</label>
+                        <input type="password" id="secNewPass" required placeholder="Enter new password">
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm New Password *</label>
+                        <input type="password" id="secConfirmPass" required placeholder="Confirm new password">
+                    </div>
+                    <button type="submit" class="upload-btn" style="background: #2563eb;">Update Password</button>
+                </form>
+            </div>
+
         </div>
     </div>
 
@@ -449,6 +513,7 @@
             <div class="modal-info">
                 <h2 id="mTitle"></h2>
                 <div class="modal-code-badge" id="mCode"></div>
+                <div class="modal-stock-badge" id="mStock"></div>
                 <div class="modal-price" id="mPrice"></div>
                 <p class="modal-desc" id="mDesc"></p>
 
@@ -467,7 +532,7 @@
                     <input type="number" id="mQty" value="1" min="1" onchange="updateCheckoutCalculation()">
                 </div>
 
-                <button class="buy-now-btn" onclick="openCheckout()">Buy Now</button>
+                <button class="buy-now-btn" id="mBuyBtn" onclick="openCheckout()">Buy Now</button>
                 <button class="share-link-btn" onclick="copyDirectProductLink()"><i class="fa-solid fa-share-nodes"></i> Copy Product Link</button>
             </div>
         </div>
@@ -553,12 +618,15 @@
         let coverIndex = 0;
         let currentActiveProductId = null;
 
+        // Default Admin Password (If not set)
+        if (!localStorage.getItem('stride_admin_pass')) {
+            localStorage.setItem('stride_admin_pass', '123456');
+        }
+
         window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('admin') === 'true') {
-                isAdmin = true;
-                document.getElementById('adminWrapper').style.display = 'flex';
-                document.getElementById('bannerBtn').style.display = 'flex';
+                document.getElementById('adminAuthModal').style.display = 'flex';
             }
 
             const savedBanner = localStorage.getItem('stride_banner');
@@ -568,6 +636,47 @@
 
             initDatabaseListener();
         };
+
+        function verifyAdminPassword() {
+            const inputPass = document.getElementById('adminPassInput').value;
+            const savedPass = localStorage.getItem('stride_admin_pass');
+
+            if (inputPass === savedPass) {
+                isAdmin = true;
+                document.getElementById('adminAuthModal').style.display = 'none';
+                document.getElementById('adminWrapper').style.display = 'flex';
+                document.getElementById('bannerBtn').style.display = 'flex';
+                renderProducts(products);
+                renderDashboard();
+                renderProductSalesTable();
+            } else {
+                alert("Incorrect Admin Password!");
+            }
+        }
+
+        function changeAdminPassword(e) {
+            e.preventDefault();
+            const current = document.getElementById('secCurrentPass').value;
+            const newPass = document.getElementById('secNewPass').value;
+            const confirmPass = document.getElementById('secConfirmPass').value;
+            const savedPass = localStorage.getItem('stride_admin_pass');
+
+            if (current !== savedPass) {
+                alert("Current Password does not match!");
+                return;
+            }
+
+            if (newPass !== confirmPass) {
+                alert("New Password and Confirm Password do not match!");
+                return;
+            }
+
+            localStorage.setItem('stride_admin_pass', newPass);
+            alert("🎉 Admin Password Updated Successfully!");
+            document.getElementById('secCurrentPass').value = '';
+            document.getElementById('secNewPass').value = '';
+            document.getElementById('secConfirmPass').value = '';
+        }
 
         function checkUrlForDirectProduct() {
             const hash = window.location.hash;
@@ -605,6 +714,9 @@
             } else if (tabName === 'amount') {
                 document.getElementById('tabAmount').classList.add('active');
                 document.getElementById('menuAmount').classList.add('active');
+            } else if (tabName === 'security') {
+                document.getElementById('tabSecurity').classList.add('active');
+                document.getElementById('menuSecurity').classList.add('active');
             }
         }
 
@@ -625,8 +737,6 @@
                         }
                         renderProducts(products);
                         if (isAdmin) renderProductSalesTable();
-                        
-                        // Check URL for direct product opening
                         checkUrlForDirectProduct();
                     });
 
@@ -717,13 +827,11 @@
                 });
             }
 
-            // Update Counter Boxes
             document.getElementById('stTotalOrders').innerText = totalOrders;
             document.getElementById('stPendingOrders').innerText = pendingOrders;
             document.getElementById('stCompletedOrders').innerText = completedOrders;
             document.getElementById('stCancelledOrders').innerText = cancelledOrders;
 
-            // Update Financial Amounts
             document.getElementById('stTodaySales').innerText = `৳ ${todaySales}`;
             document.getElementById('stMonthlySales').innerText = `৳ ${monthlySales}`;
             document.getElementById('stYearlySales').innerText = `৳ ${yearlySales}`;
@@ -732,7 +840,6 @@
             document.getElementById('stNetProfit').innerText = `৳ ${totalSales - totalCost}`;
         }
 
-        // সেলস টেবিলে প্রোডাক্টের ছবিসহ রেন্ডার করার ফাংশন
         function renderProductSalesTable() {
             const tableBody = document.getElementById('productSalesTableBody');
             tableBody.innerHTML = '';
@@ -747,7 +854,6 @@
                 
                 let pendingQty = 0;
                 let completedQty = 0;
-                let cancelledQty = 0;
                 let totalRev = 0;
 
                 pOrders.forEach(o => {
@@ -755,9 +861,7 @@
                     if (o.status === 'Completed') {
                         completedQty += qty;
                         totalRev += parseFloat(o.subtotal || (p.price * qty));
-                    } else if (o.status === 'Cancelled') {
-                        cancelledQty += qty;
-                    } else {
+                    } else if (o.status === 'Pending') {
                         pendingQty += qty;
                     }
                 });
@@ -777,10 +881,10 @@
                         </div>
                     </td>
                     <td>${p.category || 'N/A'}</td>
+                    <td><b style="color: ${p.stock > 0 ? '#059669' : '#dc2626'}; font-size: 14px;">${p.stock || 0} Pcs</b></td>
                     <td>৳ ${p.price}</td>
                     <td><span style="color:#d97706; font-weight:800; font-size:15px;">${pendingQty}</span></td>
                     <td><span style="color:#059669; font-weight:800; font-size:15px;">${completedQty}</span></td>
-                    <td><span style="color:#dc2626; font-weight:800; font-size:15px;">${cancelledQty}</span></td>
                     <td><b>৳ ${totalRev}</b></td>
                     <td><button class="btn-act btn-copy" onclick="copyProductLinkById('${p.id}')"><i class="fa-solid fa-copy"></i> Copy Link</button></td>
                 `;
@@ -869,6 +973,7 @@
             const editId = document.getElementById('editProductId').value;
             const title = document.getElementById('pTitle').value;
             let code = document.getElementById('pCode').value.trim();
+            const stock = parseInt(document.getElementById('pStock').value) || 0;
             const price = parseFloat(document.getElementById('pPrice').value);
             const costPrice = parseFloat(document.getElementById('pCostPrice').value) || 0;
             const category = document.getElementById('pCategory').value;
@@ -877,7 +982,6 @@
             const tags = document.getElementById('pTags').value;
             const desc = document.getElementById('pDesc').value;
 
-            // Auto-generate code if left blank
             if (!code) {
                 code = 'ST-' + Math.floor(100 + Math.random() * 900);
             }
@@ -888,6 +992,7 @@
                     let updateData = {
                         title: title,
                         code: code,
+                        stock: stock,
                         price: price,
                         costPrice: costPrice,
                         category: category,
@@ -926,6 +1031,7 @@
                     const newProduct = {
                         title: title,
                         code: code,
+                        stock: stock,
                         price: price,
                         costPrice: costPrice,
                         category: category,
@@ -961,6 +1067,7 @@
             document.getElementById('editProductId').value = p.id;
             document.getElementById('pTitle').value = p.title;
             document.getElementById('pCode').value = p.code || '';
+            document.getElementById('pStock').value = p.stock || 0;
             document.getElementById('pPrice').value = p.price;
             document.getElementById('pCostPrice').value = p.costPrice || '';
             document.getElementById('pCategory').value = p.category;
@@ -1043,13 +1150,14 @@
                     ? `<video src="${coverMedia.url}" muted></video>` 
                     : `<img src="${coverMedia.url}" alt="${p.title}">`;
 
-                let codeHtml = p.code ? `<div class="product-card-code">CODE: ${p.code}</div>` : '';
+                let codeHtml = p.code ? `<div class="product-card-code">${p.code}</div>` : '';
+                let stockText = (p.stock > 0) ? `<span class="product-card-stock">${p.stock} In Stock</span>` : `<span class="product-card-stock out">Out Stock</span>`;
 
                 card.innerHTML = `
                     ${adminActionsHtml}
                     ${mediaElement}
                     <div class="product-card-body">
-                        ${codeHtml}
+                        ${codeHtml} ${stockText}
                         <div class="product-card-title">${p.title}</div>
                         <div class="product-card-price">৳ ${p.price}</div>
                     </div>
@@ -1063,11 +1171,25 @@
             const p = products.find(item => item.id === id);
             if (!p) return;
 
-            // কাস্টমার বা এডমিন যে-ই ক্লিক করুক, ব্রাউজারের লিংকে প্রোডাক্ট ID যুক্ত হয়ে যাবে (#product-ID)
             window.history.pushState(null, null, `#product-${p.id}`);
 
             document.getElementById('mTitle').innerText = p.title;
-            document.getElementById('mCode').innerText = 'PRODUCT CODE: ' + (p.code || 'N/A');
+            document.getElementById('mCode').innerText = 'CODE: ' + (p.code || 'N/A');
+            
+            const stockBadge = document.getElementById('mStock');
+            const buyBtn = document.getElementById('mBuyBtn');
+            if (p.stock > 0) {
+                stockBadge.className = 'modal-stock-badge stock-in';
+                stockBadge.innerText = `In Stock: ${p.stock} units`;
+                buyBtn.disabled = false;
+                buyBtn.innerText = 'Buy Now';
+            } else {
+                stockBadge.className = 'modal-stock-badge stock-out';
+                stockBadge.innerText = 'Out of Stock';
+                buyBtn.disabled = true;
+                buyBtn.innerText = 'Out of Stock';
+            }
+
             document.getElementById('mPrice').innerText = '৳ ' + p.price;
             document.getElementById('mDesc').innerText = p.desc;
 
@@ -1121,7 +1243,6 @@
 
         function closeModal() {
             document.getElementById('productModal').style.display = 'none';
-            // মোডাল বন্ধ করলে লিংক আবার নরমাল হয়ে যাবে
             window.history.pushState(null, null, window.location.pathname + window.location.search);
         }
 
@@ -1193,6 +1314,13 @@
             const p = products.find(item => item.id === currentActiveProductId);
             if (!p) return;
 
+            const qty = parseInt(document.getElementById('mQty').value) || 1;
+
+            if (p.stock < qty) {
+                alert(`Sorry, only ${p.stock} units left in stock!`);
+                return;
+            }
+
             const name = document.getElementById('cName').value;
             const phone = document.getElementById('cPhone').value;
             const address = document.getElementById('cAddress').value;
@@ -1200,7 +1328,6 @@
             const payment = document.getElementById('cPayment').value;
             const trx = document.getElementById('cTrx').value || 'N/A';
             const note = document.getElementById('cNote').value || 'None';
-            const qty = document.getElementById('mQty').value;
             
             const colorGroup = document.getElementById('colorGroup');
             const color = (colorGroup && colorGroup.style.display !== 'none') ? document.getElementById('mColorSelect').value : 'N/A';
@@ -1243,11 +1370,16 @@
             };
 
             try {
-                // Save Order to Firebase Database
+                // 1. Save Order to Firebase
                 const ordersRef = window.dbRef(window.db, 'orders');
                 await window.dbPush(ordersRef, orderData);
 
-                // Send Email Notification via EmailJS
+                // 2. Automatically Deduct Stock Quantity from Firebase
+                const newStock = Math.max(0, p.stock - qty);
+                const productRef = window.dbRef(window.db, `products/${p.id}`);
+                await window.dbUpdate(productRef, { stock: newStock });
+
+                // 3. Send Email Notification
                 const templateParams = {
                     product_title: `[${p.code || 'N/A'}] ${p.title}`,
                     product_price: `৳${p.price} x ${qty} = ৳${subtotal}`,
@@ -1277,7 +1409,6 @@
             }
         }
 
-        // স্মার্ট ও অল-ইন-ওয়ান সার্চ সিস্টেম (কোড সার্চসহ)
         function searchProducts() {
             const rawQuery = document.getElementById('searchInput').value;
             const query = rawQuery.toLowerCase().trim();
