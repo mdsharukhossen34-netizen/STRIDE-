@@ -17,7 +17,7 @@
     <!-- Firebase SDK (v10) - Realtime Database -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getDatabase, ref, push, onValue, update, remove, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCxG98q6OfM1hr7cRGDH2cKp4CK8S5I4ss",
@@ -39,6 +39,7 @@
         window.dbOnValue = onValue;
         window.dbUpdate = update;
         window.dbRemove = remove;
+        window.dbSet = set;
     </script>
 
     <style>
@@ -132,6 +133,7 @@
         .btn-cancel { background: #ef4444; }
         .btn-del { background: #64748b; }
         .btn-copy { background: #0284c7; }
+        .btn-toggle { background: #8b5cf6; }
 
         /* Store Product Grid Layout */
         .main-container { width: 92%; max-width: 1400px; margin: 30px auto; }
@@ -146,9 +148,14 @@
         .product-card-stock { font-size: 11px; color: #059669; font-weight: 700; float: right; }
         .product-card-stock.out { color: #dc2626; }
 
-        .admin-card-actions { display: none; position: absolute; top: 10px; right: 10px; gap: 6px; z-index: 10; }
-        .edit-btn, .delete-btn, .link-btn { color: #fff; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; }
-        .edit-btn { background: #2563eb; } .delete-btn { background: #ef4444; } .link-btn { background: #0284c7; }
+        /* THREE DOTS DROPDOWN ACTION MENU */
+        .admin-card-actions { display: none; position: absolute; top: 10px; right: 10px; z-index: 10; }
+        .three-dots-btn { background: #ffffff; color: #0f172a; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 18px; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        .action-dropdown-content { display: none; position: absolute; right: 0; top: 38px; background-color: #ffffff; min-width: 140px; box-shadow: 0px 8px 16px rgba(0,0,0,0.2); border-radius: 8px; overflow: hidden; z-index: 20; border: 1px solid #e2e8f0; }
+        .action-dropdown-content.show { display: block; }
+        .action-dropdown-content button { width: 100%; padding: 10px 14px; border: none; background: transparent; text-align: left; cursor: pointer; font-size: 12px; font-weight: 600; color: #334155; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
+        .action-dropdown-content button:hover { background-color: #f1f5f9; color: #2563eb; }
+        .action-dropdown-content button.danger:hover { background-color: #fef2f2; color: #dc2626; }
 
         /* Modals */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
@@ -195,7 +202,7 @@
 
         .payment-info-box { background: #e0f2fe; border: 1px solid #7dd3fc; border-radius: 6px; padding: 10px 12px; margin-top: 8px; font-size: 13px; color: #0369a1; display: none; }
 
-        /* RESPONSIVE DESIGN - MOBILE GRID VIEW (2 PRODUCTS PER ROW) */
+        /* RESPONSIVE DESIGN - MOBILE GRID VIEW */
         @media (max-width: 768px) {
             .admin-wrapper { flex-direction: column; }
             .admin-sidebar { width: 100%; }
@@ -206,7 +213,6 @@
             .search-box { width: 100%; }
             .banner-img { height: 180px; }
 
-            /* Mobile 2 Column Grid Layout Fix */
             .main-container { width: 95%; margin: 15px auto; }
             .product-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; }
             .product-card img, .product-card video { height: 150px !important; }
@@ -218,7 +224,7 @@
         }
     </style>
 </head>
-<body>
+<body onclick="closeAllActionMenus()">
 
     <!-- Admin Authentication Modal -->
     <div class="auth-modal" id="adminAuthModal">
@@ -416,16 +422,17 @@
                             <tr>
                                 <th>Product Details & Code</th>
                                 <th>Category</th>
+                                <th>Status</th>
                                 <th>Stock Left</th>
                                 <th>Unit Price</th>
                                 <th>Pending Orders</th>
                                 <th>Completed Sales</th>
                                 <th>Total Revenue</th>
-                                <th>Direct Link</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="productSalesTableBody">
-                            <tr><td colspan="8" style="text-align: center; color: #94a3b8;">Loading sales metrics...</td></tr>
+                            <tr><td colspan="9" style="text-align: center; color: #94a3b8;">Loading sales metrics...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -618,7 +625,7 @@
         let coverIndex = 0;
         let currentActiveProductId = null;
 
-        // Default Admin Password (If not set)
+        // Default Admin Password
         if (!localStorage.getItem('stride_admin_pass')) {
             localStorage.setItem('stride_admin_pass', '123456');
         }
@@ -627,11 +634,6 @@
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('admin') === 'true') {
                 document.getElementById('adminAuthModal').style.display = 'flex';
-            }
-
-            const savedBanner = localStorage.getItem('stride_banner');
-            if (savedBanner) {
-                document.getElementById('bannerImage').src = savedBanner;
             }
 
             initDatabaseListener();
@@ -725,6 +727,15 @@
                 if (window.db && window.dbRef) {
                     clearInterval(checkFirebase);
                     
+                    // Banner Image Realtime Listener from Firebase
+                    const bannerRef = window.dbRef(window.db, 'bannerUrl');
+                    window.dbOnValue(bannerRef, (snapshot) => {
+                        const url = snapshot.val();
+                        if (url) {
+                            document.getElementById('bannerImage').src = url;
+                        }
+                    });
+
                     // Products Listener
                     const productsRef = window.dbRef(window.db, 'products');
                     window.dbOnValue(productsRef, (snapshot) => {
@@ -817,7 +828,7 @@
                         <td><span class="badge ${badgeClass}">${o.status || 'Pending'}</span></td>
                         <td>
                             <div class="action-btns">
-                                <button class="btn-act btn-complete" onclick="updateOrderStatus('${o.id}', 'Completed')" title="Mark as Completed"><i class="fa-solid fa-check"></i></button>
+                                <button class="btn-act btn-complete" onclick="updateOrderStatus('${o.id}', 'Completed')" title="Mark as Completed & Deduct Stock"><i class="fa-solid fa-check"></i> Complete</button>
                                 <button class="btn-act btn-cancel" onclick="updateOrderStatus('${o.id}', 'Cancelled')" title="Mark as Cancelled"><i class="fa-solid fa-xmark"></i></button>
                                 <button class="btn-act btn-del" onclick="deleteOrder('${o.id}')" title="Delete Order"><i class="fa-solid fa-trash"></i></button>
                             </div>
@@ -845,7 +856,7 @@
             tableBody.innerHTML = '';
 
             if (products.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #94a3b8;">No products found in store.</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: #94a3b8;">No products found in store.</td></tr>';
                 return;
             }
 
@@ -868,6 +879,9 @@
 
                 let pCodeBadge = `<span class="badge badge-code">[${p.code || 'NO-CODE'}]</span>`;
                 let coverImg = p.media && p.media.length > 0 ? p.media[0].url : 'https://via.placeholder.com/50';
+                let statusBadge = p.status === 'off' 
+                    ? `<span class="badge badge-cancelled">OFF</span>` 
+                    : `<span class="badge badge-completed">ON</span>`;
 
                 let tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -881,21 +895,45 @@
                         </div>
                     </td>
                     <td>${p.category || 'N/A'}</td>
+                    <td>${statusBadge}</td>
                     <td><b style="color: ${p.stock > 0 ? '#059669' : '#dc2626'}; font-size: 14px;">${p.stock || 0} Pcs</b></td>
                     <td>৳ ${p.price}</td>
                     <td><span style="color:#d97706; font-weight:800; font-size:15px;">${pendingQty}</span></td>
                     <td><span style="color:#059669; font-weight:800; font-size:15px;">${completedQty}</span></td>
                     <td><b>৳ ${totalRev}</b></td>
-                    <td><button class="btn-act btn-copy" onclick="copyProductLinkById('${p.id}')"><i class="fa-solid fa-copy"></i> Copy Link</button></td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="btn-act btn-toggle" onclick="toggleProductStatus('${p.id}')">${p.status === 'off' ? 'Turn On' : 'Turn Off'}</button>
+                            <button class="btn-act btn-copy" onclick="copyProductLinkById('${p.id}')"><i class="fa-solid fa-copy"></i></button>
+                        </div>
+                    </td>
                 `;
                 tableBody.appendChild(tr);
             });
         }
 
-        async function updateOrderStatus(orderId, status) {
+        // UPDATE ORDER STATUS (Deduct Stock when 'Completed')
+        async function updateOrderStatus(orderId, newStatus) {
             try {
-                const orderRef = window.dbRef(window.db, `orders/${orderId}`);
-                await window.dbUpdate(orderRef, { status: status });
+                const targetOrder = orders.find(o => o.id === orderId);
+                
+                if (targetOrder) {
+                    // Reduce Stock only if changing status from Pending/Cancelled to Completed
+                    if (newStatus === 'Completed' && targetOrder.status !== 'Completed') {
+                        const targetProduct = products.find(p => p.id === targetOrder.productId);
+                        if (targetProduct) {
+                            const orderQty = parseInt(targetOrder.qty) || 1;
+                            const updatedStock = Math.max(0, (parseInt(targetProduct.stock) || 0) - orderQty);
+                            
+                            const productRef = window.dbRef(window.db, `products/${targetProduct.id}`);
+                            await window.dbUpdate(productRef, { stock: updatedStock });
+                        }
+                    }
+
+                    const orderRef = window.dbRef(window.db, `orders/${orderId}`);
+                    await window.dbUpdate(orderRef, { status: newStatus });
+                    alert(`Order status updated to: ${newStatus}`);
+                }
             } catch (err) {
                 alert("Status update failed: " + err.message);
             }
@@ -912,14 +950,22 @@
             }
         }
 
-        function changeBanner(e) {
+        // CHANGE BANNER & SAVE TO FIREBASE DATABASE
+        async function changeBanner(e) {
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(event) {
+                reader.onload = async function(event) {
                     const bannerUrl = event.target.result;
                     document.getElementById('bannerImage').src = bannerUrl;
-                    localStorage.setItem('stride_banner', bannerUrl);
+                    
+                    try {
+                        const bannerRef = window.dbRef(window.db, 'bannerUrl');
+                        await window.dbSet(bannerRef, bannerUrl);
+                        alert("🎉 Banner updated globally for all users!");
+                    } catch(err) {
+                        alert("Failed to sync banner to database: " + err.message);
+                    }
                 }
                 reader.readAsDataURL(file);
             }
@@ -1040,6 +1086,7 @@
                         tags: tags ? tags.split(',').map(s => s.trim().toLowerCase()) : [],
                         desc: desc,
                         media: finalMedia,
+                        status: 'active', // Active by default
                         createdAt: new Date().getTime()
                     };
 
@@ -1058,7 +1105,7 @@
         }
 
         function editProduct(e, id) {
-            e.stopPropagation();
+            if (e) e.stopPropagation();
             const p = products.find(item => item.id === id);
             if (!p) return;
 
@@ -1111,7 +1158,7 @@
         }
 
         async function deleteProduct(e, id) {
-            e.stopPropagation();
+            if (e) e.stopPropagation();
             if (confirm('Are you sure you want to delete this product?')) {
                 try {
                     const itemRef = window.dbRef(window.db, `products/${id}`);
@@ -1123,25 +1170,62 @@
             }
         }
 
+        // TURN PRODUCT ON / OFF (HIDE / SHOW)
+        async function toggleProductStatus(id, e) {
+            if (e) e.stopPropagation();
+            const p = products.find(item => item.id === id);
+            if (!p) return;
+
+            const newStatus = (p.status === 'off') ? 'active' : 'off';
+            try {
+                const itemRef = window.dbRef(window.db, `products/${id}`);
+                await window.dbUpdate(itemRef, { status: newStatus });
+                alert(`Product is now ${newStatus === 'off' ? 'Disabled/Hidden (OFF)' : 'Active/Visible (ON)'}`);
+            } catch (err) {
+                alert("Failed to update status: " + err.message);
+            }
+        }
+
+        // TOGGLE 3-DOT ACTION MENU
+        function toggleActionMenu(e, id) {
+            e.stopPropagation();
+            closeAllActionMenus();
+            const dropdown = document.getElementById(`dropdown-${id}`);
+            if (dropdown) {
+                dropdown.classList.toggle('show');
+            }
+        }
+
+        function closeAllActionMenus() {
+            document.querySelectorAll('.action-dropdown-content').forEach(d => d.classList.remove('show'));
+        }
+
         function renderProducts(items) {
             const grid = document.getElementById('productGrid');
             grid.innerHTML = '';
 
-            if (items.length === 0) {
+            // Filter out 'OFF' status products for normal customers
+            const visibleItems = isAdmin ? items : items.filter(p => p.status !== 'off');
+
+            if (visibleItems.length === 0) {
                 grid.innerHTML = '<p style="color:#94a3b8;">No products available in Store.</p>';
                 return;
             }
 
-            items.forEach(p => {
+            visibleItems.forEach(p => {
                 const card = document.createElement('div');
                 card.className = 'product-card';
                 card.onclick = () => openModal(p.id);
 
                 let adminActionsHtml = isAdmin ? `
-                    <div class="admin-card-actions" style="display:flex;">
-                        <button class="link-btn" onclick="copyProductLink(event, '${p.id}')" title="Copy Product Direct Link"><i class="fa-solid fa-link"></i></button>
-                        <button class="edit-btn" onclick="editProduct(event, '${p.id}')" title="Edit Price / Info"><i class="fa-solid fa-pen"></i></button>
-                        <button class="delete-btn" onclick="deleteProduct(event, '${p.id}')" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                    <div class="admin-card-actions" style="display:block;">
+                        <button class="three-dots-btn" onclick="toggleActionMenu(event, '${p.id}')">⋮</button>
+                        <div class="action-dropdown-content" id="dropdown-${p.id}">
+                            <button onclick="copyProductLink(event, '${p.id}')"><i class="fa-solid fa-link"></i> Copy Link</button>
+                            <button onclick="editProduct(event, '${p.id}')"><i class="fa-solid fa-pen"></i> Edit Product</button>
+                            <button onclick="toggleProductStatus('${p.id}', event)"><i class="fa-solid fa-power-off"></i> ${p.status === 'off' ? 'Turn On' : 'Turn Off'}</button>
+                            <button class="danger" onclick="deleteProduct(event, '${p.id}')"><i class="fa-solid fa-trash"></i> Delete</button>
+                        </div>
                     </div>
                 ` : '';
 
@@ -1153,7 +1237,10 @@
                 let codeHtml = p.code ? `<div class="product-card-code">${p.code}</div>` : '';
                 let stockText = (p.stock > 0) ? `<span class="product-card-stock">${p.stock} In Stock</span>` : `<span class="product-card-stock out">Out Stock</span>`;
 
+                let offBadgeHtml = (isAdmin && p.status === 'off') ? `<div style="background:#ef4444; color:#fff; font-size:10px; font-weight:bold; padding:2px 6px; position:absolute; top:10px; left:10px; border-radius:4px; z-index:5;">OFF (HIDDEN)</div>` : '';
+
                 card.innerHTML = `
+                    ${offBadgeHtml}
                     ${adminActionsHtml}
                     ${mediaElement}
                     <div class="product-card-body">
@@ -1370,16 +1457,11 @@
             };
 
             try {
-                // 1. Save Order to Firebase
+                // 1. Save Order to Firebase Database (Stock NOT deducted here)
                 const ordersRef = window.dbRef(window.db, 'orders');
                 await window.dbPush(ordersRef, orderData);
 
-                // 2. Automatically Deduct Stock Quantity from Firebase
-                const newStock = Math.max(0, p.stock - qty);
-                const productRef = window.dbRef(window.db, `products/${p.id}`);
-                await window.dbUpdate(productRef, { stock: newStock });
-
-                // 3. Send Email Notification
+                // 2. Send Email Notification
                 const templateParams = {
                     product_title: `[${p.code || 'N/A'}] ${p.title}`,
                     product_price: `৳${p.price} x ${qty} = ৳${subtotal}`,
